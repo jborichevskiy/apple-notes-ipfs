@@ -32,21 +32,31 @@ export default function handler(req, res) {
       //   )}`;
 
       const args = ["-f", "rtf", "-t", "markdown"];
-      let convertedNote = nodePandoc(absPath, args, callback);
+      let convertedNote = nodePandoc(absPath, args, (err, result) => {
+        if (err) {
+          return res.json({ error: err });
+        }
 
-      // upload to IFPS
-      fetch("http://137.184.218.83:3000/uploadJSON", {
-        method: "POST",
-        body: JSON.stringify({
-          content: convertedNote,
+        const data = {
+          content: result,
           author: "",
-        }),
-      })
-        .then((r) => r.json())
-        .then((r) => {
-          console.log(r);
-          return res.json(r);
-        });
+        };
+        console.log("uploading", data);
+        // upload to IFPS
+        fetch("http://137.184.218.83:3000/uploadJSON", {
+          // fetch("http://localhost:4001/uploadJSON", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((r) => r.json())
+          .then((r) => {
+            console.log(r);
+            return res.json(r);
+          });
+      });
     } else {
       return res.json({ error: "file not found or converted yet" });
     }
