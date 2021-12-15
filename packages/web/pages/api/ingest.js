@@ -3,6 +3,7 @@ const { exec } = require("child_process");
 export default function handler(req, res) {
   console.log(req.body);
   console.log(req.data);
+  // TODO: implenent queueing/signaling while task in progress
   //   launch KeyboardMaestro script
   exec(
     `osascript -e \'tell application "Keyboard Maestro Engine" to do script "70DD60CF-5422-4F50-887C-1C1513CA87B3" with parameter "${req.body.url}"\'`,
