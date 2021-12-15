@@ -6,7 +6,7 @@ export default function handler(req, res) {
   // TODO: implenent queueing/signaling while task in progress
   //   launch KeyboardMaestro script
   exec(
-    `osascript -e \'tell application "Keyboard Maestro Engine" to do script "70DD60CF-5422-4F50-887C-1C1513CA87B3" with parameter "${req.body.url}"\'`,
+    `osascript -e \'tell application "Keyboard Maestro Engine" to do script "C40BD8A5-4BD1-4AED-AF90-9AF9C879388C" with parameter "${req.body.url}"\'`,
     (error, stdout, stderr) => {
       if (error) {
         console.log(`error: ${error.message}`);
