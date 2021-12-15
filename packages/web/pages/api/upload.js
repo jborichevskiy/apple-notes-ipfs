@@ -15,7 +15,7 @@ const callback = function (err, result) {
 
 export default function handler(req, res) {
   // pull in file id from req query param
-  const fileId = req.query.fileId;
+  const fileId = req.query.fileId.split("#")[0];
 
   const dataDir = "/Users/m1/Desktop/Data/";
 
