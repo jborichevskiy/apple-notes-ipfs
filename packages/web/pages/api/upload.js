@@ -24,7 +24,7 @@ export default function handler(req, res) {
 
     if (file) {
       const absPath = `${dataDir}/${file}`;
-      const data = fs.readFileSync(absPath).toString();
+      //   const data = fs.readFileSync(absPath).toString();
 
       //   const markdownOutputPathAbs = `${dataDir}/markdown/${file.replace(
       //     ".txt",
@@ -33,9 +33,9 @@ export default function handler(req, res) {
 
       const args = ["-f", "rtf", "-t", "markdown"];
       let convertedNote = nodePandoc(absPath, args, callback);
-      // upload to IFPS
 
-      let uploadResponse = fetch("http://localhost:4001/uploadJSON", {
+      // upload to IFPS
+      fetch("http://137.184.218.83:3000/uploadJSON", {
         method: "POST",
         body: JSON.stringify({
           content: convertedNote,
