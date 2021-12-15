@@ -47,7 +47,8 @@ export default function handler(req, res) {
           console.log(r);
           return res.json(r);
         });
+    } else {
+      return res.json({ error: "file not found or converted yet" });
     }
   });
-  return res.json({ error: "file not found or converted yet" });
 }
