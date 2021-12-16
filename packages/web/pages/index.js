@@ -31,13 +31,19 @@ export default function Home() {
     });
   }
   return (
-    <div className={styles.container} className="col">
+    <div className={styles.container} className="doc col">
+      <div className="section">
+        <h2 className="header">notes.site</h2>
+        <a href="/page?id=0df3O0NErlEnfucDOuPC5W8iQ">how to use</a>
+      </div>
       <input
         onChange={(e) => setUrl(e.target.value)}
         placeholder="iCloud link"
       ></input>
       <button onClick={handleSubmit}>Submit</button>
-      <button onClick={handleCheckStatus}>Check Status</button>
+      <button disabled={!url} onClick={handleCheckStatus}>
+        Check Status
+      </button>
       {noteData && noteData.ipfsHash && (
         <div className="col">
           <a target={"_blank"} href={`/page?id=${pageId}`}>
@@ -53,6 +59,15 @@ export default function Home() {
       )}
       <style jsx>
         {`
+          .header {
+            margin-bottom: 0;
+          }
+          .section {
+            padding-bottom: 1rem;
+          }
+          .doc {
+            padding: 1rem;
+          }
           .col {
             display: flex;
             flex-direction: column;
