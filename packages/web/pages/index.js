@@ -6,9 +6,12 @@ import { useState } from "react";
 export default function Home() {
   const [url, setUrl] = useState("");
   const [noteData, setNoteData] = useState({});
+  const [pageId, setPageId] = useState("");
 
   async function handleCheckStatus() {
     const id = url.split("/notes/")[1].split("#")[0];
+    setPageId(id);
+
     const response = await fetch(`/api/lookup?id=${id}`);
     const responseJson = await response.json();
     console.log({ responseJson });
@@ -36,14 +39,22 @@ export default function Home() {
       <button onClick={handleSubmit}>Submit</button>
       <button onClick={handleCheckStatus}>Check Status</button>
       {noteData && noteData.ipfsHash && (
-        <a target={"_blank"} href={`https://ipfs.io/ipfs/${noteData.ipfsHash}`}>
-          view on IPFS
-        </a>
+        <div className="col">
+          <a target={"_blank"} href={`/page?id=${pageId}`}>
+            view page
+          </a>
+          <a
+            target={"_blank"}
+            href={`https://ipfs.io/ipfs/${noteData.ipfsHash}`}
+          >
+            view on IPFS (takes a while to index)
+          </a>
+        </div>
       )}
       <style jsx>
         {`
           .col {
-            flex: 1;
+            display: flex;
             flex-direction: column;
           }
         `}
