@@ -1,9 +1,11 @@
 const { exec } = require("child_process");
+import { PrismaClient } from "@prisma/client";
 
-export default function handler(req, res) {
+export const prisma = new PrismaClient();
+
+export default async function handler(req, res) {
   console.log(req.body);
-  console.log(req.data);
-  const id = req.body.url.split("#")[0];
+  const id = req.body.url.split("/notes/")[1].split("#")[0];
   // TODO: implenent queueing/signaling while task in progress
   //   launch KeyboardMaestro script
   console.log(`passing ${id} to KeyboardMaestro for ingestion`);
@@ -21,6 +23,12 @@ export default function handler(req, res) {
       console.log(`stdout: ${stdout}`);
     }
   );
+
+  const dbNote = await prisma.note.create({
+    data: {
+      appleId: id,
+    },
+  });
 
   res.status(200).json({ status: "ok" });
 }

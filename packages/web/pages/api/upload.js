@@ -1,35 +1,22 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import nodePandoc from "node-pandoc";
 import fs from "fs";
+import { PrismaClient } from "@prisma/client";
 
-const callback = function (err, result) {
-  if (err) {
-    console.error("Oh Nos: ", err);
-  }
+export const prisma = new PrismaClient();
 
-  // For output to files, the 'result' will be a boolean 'true'.
-  // Otherwise, the converted value will be returned.
-  console.log(result);
-  return result;
-};
-
-export default function handler(req, res) {
+export default async function handler(req, res) {
   // pull in file id from req query param
   const fileId = req.query.fileId.split("#")[0];
 
   const dataDir = "/Users/m1/Desktop/Data/";
+  // const dataDir = "/Users/jonbo/Github/jborichevskiy/notes-icloud/data/clean/";
 
   fs.readdir(dataDir, (err, files) => {
     let file = files.filter((file) => file.includes(fileId));
 
     if (file) {
       const absPath = `${dataDir}/${file}`;
-      //   const data = fs.readFileSync(absPath).toString();
-
-      //   const markdownOutputPathAbs = `${dataDir}/markdown/${file.replace(
-      //     ".txt",
-      //     ".md"
-      //   )}`;
 
       const args = ["-f", "rtf", "-t", "markdown"];
       let convertedNote = nodePandoc(absPath, args, (err, result) => {
@@ -52,8 +39,24 @@ export default function handler(req, res) {
           body: JSON.stringify(data),
         })
           .then((r) => r.json())
-          .then((r) => {
+          .then(async (r) => {
             console.log(r);
+            const foundNote = await prisma.note.findUnique({
+              where: {
+                appleId: fileId,
+              },
+            });
+            if (foundNote) {
+              await prisma.note.update({
+                data: {
+                  content: result,
+                  ipfsHash: r.hash,
+                },
+                where: {
+                  appleId: fileId,
+                },
+              });
+            }
             return res.json(r);
           });
       });
