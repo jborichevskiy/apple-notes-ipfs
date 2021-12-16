@@ -10,7 +10,9 @@ export default async function handler(req, res) {
     },
   });
   if (note) {
-    return res.status(200).json({ id: id, ipfsHash: note.ipfsHash });
+    return res
+      .status(200)
+      .json({ id: id, ipfsHash: note.ipfsHash, content: note.content });
   } else {
     return res.json({ error: "note not found" });
   }
