@@ -8,7 +8,7 @@ export default function Home() {
 
   function handleSubmit() {
     console.log({ url });
-    fetch("http://51.159.120.185:3000/api/ingest", {
+    fetch("/api/ingest", {
       method: "POST",
       headers: {
         "content-type": "application/json",
