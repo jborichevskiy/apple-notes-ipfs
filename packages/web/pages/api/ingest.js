@@ -24,8 +24,14 @@ export default async function handler(req, res) {
     }
   );
 
-  const dbNote = await prisma.note.create({
-    data: {
+  const dbNote = await prisma.note.upsert({
+    create: {
+      appleId: id,
+    },
+    update: {
+      appleId: id,
+    },
+    where: {
       appleId: id,
     },
   });
