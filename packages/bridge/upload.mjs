@@ -23,7 +23,8 @@ async function main() {
       console.log({ file });
 
       if (file) {
-        const absPath = `${dataDir}/${file}`;
+        const absPath = `${dataDir}${file}`;
+        console.log({ absPath });
 
         const args = ["-f", "rtf", "-t", "gfm"];
         nodePandoc(absPath, args, (err, result) => {
