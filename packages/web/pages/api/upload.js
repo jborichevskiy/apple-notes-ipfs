@@ -18,8 +18,8 @@ export default async function handler(req, res) {
     if (file) {
       const absPath = `${dataDir}/${file}`;
 
-      const args = ["-f", "rtf", "-t", "markdown"];
-      let convertedNote = nodePandoc(absPath, args, (err, result) => {
+      const args = ["-f", "rtf", "-t", "gfm"];
+      nodePandoc(absPath, args, (err, result) => {
         if (err) {
           return res.json({ error: err });
         }
