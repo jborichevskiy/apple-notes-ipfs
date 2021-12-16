@@ -1,7 +1,6 @@
-import Head from "next/head";
-import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -31,30 +30,31 @@ export default function Home() {
     });
   }
   return (
-    <div className={styles.container} className="doc col">
+    <div className={`${styles.container} doc col`}>
       <div className="section">
         <h2 className="header">notes.site</h2>
-        <a href="/page?id=0df3O0NErlEnfucDOuPC5W8iQ">how to use</a>
+        <Link href="/page?id=0df3O0NErlEnfucDOuPC5W8iQ">
+          <a>how to use</a>
+        </Link>
       </div>
       <input
         onChange={(e) => setUrl(e.target.value)}
         placeholder="iCloud link"
       ></input>
-      <button onClick={handleSubmit}>Submit</button>
+      <button disabled={!url} onClick={handleSubmit}>
+        Submit
+      </button>
       <button disabled={!url} onClick={handleCheckStatus}>
         Check Status
       </button>
       {noteData && noteData.ipfsHash && (
         <div className="col">
-          <a target={"_blank"} href={`/page?id=${pageId}`}>
-            view page
-          </a>
-          <a
-            target={"_blank"}
-            href={`https://ipfs.io/ipfs/${noteData.ipfsHash}`}
-          >
-            view on IPFS (takes a while to index)
-          </a>
+          <Link href={`/page?id=${pageId}`}>
+            <a>view page</a>
+          </Link>
+          <Link href={`/page?id=${pageId}`}>
+            <a>view on IPFS (takes a while to index)</a>
+          </Link>
         </div>
       )}
       <style jsx>
