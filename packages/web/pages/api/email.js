@@ -4,11 +4,11 @@ export const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   if (req.method == "POST") {
-    console.log("incoming email");
-    console.log(req.body.html);
+    console.log("incoming email", req.body.from);
 
     const r = new RegExp("(https://www.icloud.com/notes/[0-9A-z-#]+)");
 
+    // TODO: protection
     const results = r.exec(req.body.html);
     if (results && results.length == 2) {
       const url = results[1];
