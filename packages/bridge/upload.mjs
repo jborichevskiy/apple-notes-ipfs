@@ -1,10 +1,45 @@
 import pkg from "@prisma/client";
 const { PrismaClient } = pkg;
+
+import nodemailer from "nodemailer";
 import fs from "fs";
 import nodePandoc from "node-pandoc";
 import fetch from "node-fetch";
 
+const hostname = process.env.SMTP_HOST;
+const username = process.env.SMTP_USERNAME;
+const password = process.env.SMTP_PASSWORD;
+
 const prisma = new PrismaClient();
+
+function sendEmail(to, bodyText, bodyHTML) {
+  console.log(`Sending email to ${to}`);
+  const transporter = nodemailer.createTransport({
+    host: hostname,
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: username,
+      pass: password,
+    },
+    logger: true,
+  });
+
+  const info = transporter.sendMail(
+    {
+      from: '"notes.site" <share@notes.site>',
+      to: to,
+      subject: "notes.site publish success",
+      text: bodyText,
+      html: bodyHTML,
+      headers: {},
+    },
+    (res) => {
+      console.log({ res });
+    }
+  );
+}
 
 async function main() {
   let awaitingUpload = await prisma.note.findMany({
@@ -34,7 +69,7 @@ async function main() {
 
           const data = {
             content: result,
-            author: "",
+            author: awaitingUpload.email,
           };
           console.log("uploading", data);
           // upload to IFPS
@@ -55,6 +90,7 @@ async function main() {
                 },
               });
               if (foundNote) {
+                console.log({ foundNote });
                 await prisma.note.update({
                   data: {
                     content: result,
@@ -65,6 +101,21 @@ async function main() {
                     appleId: note.appleId,
                   },
                 });
+
+                // send email
+                if (foundNote.email) {
+                  sendEmail(
+                    foundNote.email,
+                    `your post has been created! 
+                    
+                    view it here: https://notes.site/page?id=${foundNote.appleId}
+                    
+                    you can delete it from here.`,
+                    `<p>your post has been created!</p><br><br>view it <a href="https://notes.site/page?id=${foundNote.appleId}">here</a>`
+                  );
+                }
+
+                // update emailSent = true
               }
             });
         });
@@ -74,21 +125,4 @@ async function main() {
 }
 
 await main();
-//   if (dbNote) {
-//     console.log(`passing ${id} to KeyboardMaestro for updating`);
-//     exec(
-//       `osascript -e \'tell application "Keyboard Maestro Engine" to do script "27338C11-555A-40B5-A7B4-6D776867C975" with parameter "${id}"\'`,
-//       (error, stdout, stderr) => {
-//         if (error) {
-//           console.log(`error: ${error.message}`);
-//           return;
-//         }
-//         if (stderr) {
-//           console.log(`stderr: ${stderr}`);
-//           return;
-//         }
-//         console.log(`stdout: ${stdout}`);
-//       }
-//     );
-//   } else {
-//   }
+// sendEmail("jonborichef@icloud.com", "test", "<p>test</p>");
