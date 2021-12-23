@@ -12,7 +12,8 @@
     "next": "12.0.7",
     "node-pandoc": "^0.3.0",
     "react": "^17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "showdown": "^1.9.1"
   },
   "devDependencies": {
     "eslint": "8.4.1",
