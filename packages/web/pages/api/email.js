@@ -32,7 +32,9 @@ export default async function handler(req, res) {
         },
       });
 
-      res.status(200).json({ status: "ok" });
+      res.status(200).json({ status: "note ingested" });
+    } else {
+      res.status(200).json({ status: "no valid url found" });
     }
   }
 }
