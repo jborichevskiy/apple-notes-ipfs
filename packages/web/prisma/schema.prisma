@@ -16,7 +16,8 @@ model Note {
   ipfsHash  String?
   title     String?
   content   String?
-  // author    String?
-  createdAt   DateTime @default(now())
+  author    String?
+  email     String?
+  createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
