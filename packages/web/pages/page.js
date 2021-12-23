@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import showdown from "showdown";
 
 export default function Page() {
   const [pageId, setPageId] = useState("");
@@ -46,13 +47,12 @@ export default function Page() {
 
   return (
     <div className="document">
-      <script
+      {/* <script
         src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"
-        async
         integrity="sha512-L03kznCrNOfVxOUovR6ESfCz9Gfny7gihUX/huVbQB9zjODtYpxaVtIaAkpetoiyV2eqWbvxMH9fiSv5enX7bw=="
         crossOrigin="anonymous"
         referrerPolicy="no-referrer"
-      ></script>
+      ></script> */}
       <div id="targetDiv"></div>
       <style jsx>{`
         .document {
