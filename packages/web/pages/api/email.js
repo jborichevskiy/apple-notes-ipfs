@@ -24,8 +24,10 @@ export default async function handler(req, res) {
           email: authorEmail,
         },
         update: {
-          author: authorName,
-          email: authorEmail,
+          // data: {
+          //   author: authorName,
+          //   email: authorEmail,
+          // },
         },
         where: {
           appleId: id,
