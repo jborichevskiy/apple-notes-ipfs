@@ -5,6 +5,7 @@ import nodemailer from "nodemailer";
 import fs from "fs";
 import nodePandoc from "node-pandoc";
 import fetch from "node-fetch";
+import { exec } from "child_process";
 
 const hostname = process.env.SMTP_HOST;
 const username = process.env.SMTP_USERNAME;
@@ -53,24 +54,51 @@ async function main() {
 
   fs.readdir(dataDir, (err, files) => {
     awaitingUpload.forEach((note) => {
-      const file = files.find((f) => f.includes(note.appleId));
+      const rtfFile = files.find((f) => f.includes(`${note.appleId}.rtf`));
+      // const htmlFile = files.find((f) => f.includes(`${note.appleId}.html`));
 
-      console.log({ file });
+      console.log({ rtfFile });
 
-      if (file) {
-        const absPath = `${dataDir}${file}`;
-        console.log({ absPath });
+      if (rtfFile) {
+        const absPathRtf = `${dataDir}${rtfFile}`;
 
+        // convert RTF to HTML
+        const command = `/usr/bin/textutil -convert html ${absPathRtf} -output ${dataDir}${note.appleId}.html`;
+        console.log({ command });
+        exec(command, (error, stdout, stderr) => {
+          if (error) {
+            console.log(`error: ${error.message}`);
+            return;
+          }
+          if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            return;
+          }
+          console.log(`stdout: ${stdout}`);
+        });
+
+        // create our markdown file
         const args = ["-f", "rtf", "-t", "gfm"];
-        nodePandoc(absPath, args, (err, result) => {
+        nodePandoc(absPathRtf, args, (err, generatedMarkdown) => {
           if (err) {
             return res.json({ error: err });
           }
 
+          const htmlBuffer = fs.readFileSync(`${dataDir}${note.appleId}.html`);
+          const htmlContent = htmlBuffer.toString();
+
+          const rtfBuffer = fs.readFileSync(`${dataDir}${rtfFile}`);
+          const rtfContent = rtfBuffer.toString();
+
           const data = {
-            content: result,
-            author: awaitingUpload.email,
+            markdown: generatedMarkdown,
+            html: htmlContent,
+            rtf: rtfContent,
+            created: new Date(),
+            author: note.author,
+            id: note.appleId,
           };
+
           console.log("uploading", data);
           // upload to IFPS
           fetch("http://137.184.218.83:3000/uploadJSON", {
@@ -90,12 +118,13 @@ async function main() {
                 },
               });
               if (foundNote) {
-                console.log({ foundNote });
                 await prisma.note.update({
                   data: {
-                    content: result,
                     ipfsHash: r.hash,
                     updatedAt: new Date(),
+                    markdownContent: generatedMarkdown,
+                    htmlContent: htmlContent,
+                    rtfContent: rtfContent,
                   },
                   where: {
                     appleId: note.appleId,
@@ -106,13 +135,13 @@ async function main() {
                 if (foundNote.email) {
                   sendEmail(
                     foundNote.email,
-                    `your post has been created! 
-                    
-                    view it here: https://notes.site/page?id=${foundNote.appleId}
-                    
-                    you can delete it from here.`,
-                    `<p>your post has been created!</p><br><br>view it <a href="https://notes.site/page?id=${foundNote.appleId}">here</a>`
+                    `your post has been created! view it here: https://notes.site/pages/${foundNote.appleId}
+
+                    thanks for trying notes.site`,
+                    `<p>your post has been created! view it <a href="https://notes.site/pages/${foundNote.appleId}">here</a><br>thanks for trying notes.site</p>`
                   );
+                } else {
+                  console.log("skipping email notification");
                 }
 
                 // update emailSent = true

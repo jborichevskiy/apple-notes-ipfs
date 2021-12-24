@@ -11,13 +11,15 @@ datasource db {
 }
 
 model Note {
-  id        Int    @id @default(autoincrement())
-  appleId   String @unique
-  ipfsHash  String?
-  title     String?
-  content   String?
-  author    String?
-  email     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id                Int     @id @default(autoincrement())
+  appleId           String  @unique
+  ipfsHash          String?
+  title             String?
+  author            String?
+  email             String?
+  htmlContent       String?
+  rtfContent        String?
+  markdownContent   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now())
 }
