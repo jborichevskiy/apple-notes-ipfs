@@ -10,16 +10,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Note {
+model Post {
   id                Int     @id @default(autoincrement())
+  account           Account @relation(fields: [accountId], references: [id])
+  accountId         Int
   appleId           String  @unique
   ipfsHash          String?
   title             String?
-  author            String?
-  email             String?
   htmlContent       String?
   rtfContent        String?
   markdownContent   String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @default(now())
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  username          String  @unique
+  email             String  @unique
+  // otherEmails       String[]
+  name              String?
+  posts             Post[]
 }
