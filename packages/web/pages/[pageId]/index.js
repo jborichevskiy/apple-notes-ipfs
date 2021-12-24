@@ -3,20 +3,12 @@ import { useState, useEffect } from "react";
 import showdown from "showdown";
 
 export default function Page() {
-  const [pageId, setPageId] = useState("");
   const [ipfsHash, setIpfsHash] = useState("");
   const [markdown, setMarkdown] = useState("");
 
   const router = useRouter();
-  const { id } = router.query;
-
-  useEffect(() => {
-    if (!id) {
-      return;
-    }
-    console.log({ id });
-    setPageId(id);
-  }, [id]);
+  console.log("🚀 ~ file: index.js ~ line 10 ~ Page ~ router", router)
+  const { pageId } = router.query;
 
   useEffect(() => {
     if (pageId) {
@@ -39,21 +31,18 @@ export default function Page() {
   //   }, [ipfsHash]);
 
   useEffect(() => {
-    const target = document.getElementById("targetDiv");
-    const converter = new showdown.Converter();
-    const html = converter.makeHtml(markdown);
-    target.innerHTML = html;
+    const a = setTimeout(() => {
+      const target = document.getElementById("markdownContent");
+      const converter = new showdown.Converter();
+      const html = converter.makeHtml(markdown);
+      target.innerHTML = html;
+    }, 3000);
+    return () => clearTimeout(a);
   }, [markdown]);
 
   return (
     <div className="document">
-      {/* <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"
-        integrity="sha512-L03kznCrNOfVxOUovR6ESfCz9Gfny7gihUX/huVbQB9zjODtYpxaVtIaAkpetoiyV2eqWbvxMH9fiSv5enX7bw=="
-        crossOrigin="anonymous"
-        referrerPolicy="no-referrer"
-      ></script> */}
-      <div id="targetDiv"></div>
+      <div id="markdownContent">loading...</div>
       <style jsx>{`
         .document {
           padding: 1rem;
