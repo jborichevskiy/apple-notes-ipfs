@@ -1,10 +1,13 @@
 .container {
+  height: 100vh;;
   display: grid;
   grid-template-columns: 400px 1fr;
-  grid-template-rows: auto;
+  grid-template-rows: auto auto 50px;
   grid-template-areas: 
     "sidebar main"
     "sidebar main"
+    "footer main";
+  overflow-y: scroll;
 }
 
 main.body {
@@ -15,10 +18,16 @@ aside.sidebar {
   grid-area: sidebar;
 }
 
+div.footer {
+  grid-area: footer;
+}
+
 @media screen and (max-width: 900px) {
   .container {
+    grid-template-rows: auto auto 50px;
     grid-template-areas: 
       "sidebar sidebar"
       "main main"
+      "footer footer"
   }
 }

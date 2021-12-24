@@ -1,0 +1,10 @@
+.container {
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container h3 {
+  font-weight: 400;
+}
