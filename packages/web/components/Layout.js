@@ -1,5 +1,6 @@
 import styles from "@components/Layout.module.css";
-import Sidebar from "./Sidebar";
+import Sidebar from "@components/Sidebar";
+import Footer from "@components/Footer";
 
 const Layout = ({ children }) => {
   return (
@@ -8,6 +9,9 @@ const Layout = ({ children }) => {
         <Sidebar name="Jonbo" />
       </aside>
       <main className={styles.body}>{children}</main>
+      <div className={styles.footer}>
+        <Footer />
+      </div>
     </div>
   );
 };
