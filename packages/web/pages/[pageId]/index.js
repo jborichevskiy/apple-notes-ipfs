@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import showdown from "showdown";
 import useSwr from "swr";
 
+import Layout from "@components/Layout";
+
 const postFetcher = async (url) => {
   const res = await fetch(url);
 
@@ -57,15 +59,17 @@ export default function Page() {
   }, [postData]);
 
   return (
-    <div className="document">
-      {!postData && !postError ? "loading..." : null}
-      {postData && !postError ? <div id="content" /> : null}
-      {postError ? postError.message : null}
-      <style jsx>{`
-        .document {
-          padding: 1rem;
-        }
-      `}</style>
-    </div>
+    <Layout>
+      <div className="document">
+        {!postData && !postError ? "loading..." : null}
+        {postData && !postError ? <div id="markdownContent" /> : null}
+        {postError ? postError.message : null}
+        <style jsx>{`
+          .document {
+            padding: 1rem;
+          }
+        `}</style>
+      </div>
+    </Layout>
   );
 }
