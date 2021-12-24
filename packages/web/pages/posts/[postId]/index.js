@@ -18,14 +18,15 @@ const postFetcher = async (url) => {
   return res.json();
 };
 
-export default function Page() {
+export default function Page({ host }) {
   const router = useRouter();
   const { postId } = router.query;
+  const subdomain = host.split(".")[0];
 
   const [ipfsHash, setIpfsHash] = useState("");
 
   const { data: postData, error: postError } = useSwr(
-    postId && `/api/lookup?id=${postId}`,
+    postId && `/api/lookup?id=${postId}&subdomain=${subdomain}`,
     postFetcher
   );
 
@@ -72,4 +73,17 @@ export default function Page() {
       </div>
     </Layout>
   );
+}
+
+export async function getServerSideProps({ req, res }) {
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=1, stale-while-revalidate=59"
+  );
+
+  return {
+    props: {
+      host: req.headers.host,
+    },
+  };
 }
