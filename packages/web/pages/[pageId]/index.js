@@ -62,7 +62,7 @@ export default function Page() {
     <Layout>
       <div className="document">
         {!postData && !postError ? "loading..." : null}
-        {postData && !postError ? <div id="markdownContent" /> : null}
+        {postData && !postError ? <div id="content" /> : null}
         {postError ? postError.message : null}
         <style jsx>{`
           .document {
