@@ -116,9 +116,6 @@ async function main() {
                 where: {
                   appleId: note.appleId,
                 },
-                select: {
-                  account: true,
-                },
               });
               if (foundNote) {
                 await prisma.post.update({
@@ -129,22 +126,25 @@ async function main() {
                     htmlContent: htmlContent,
                     rtfContent: rtfContent,
                   },
-                  select: {
-                    account: true,
-                  },
                   where: {
                     appleId: note.appleId,
                   },
                 });
 
+                const account = await prisma.account.findUnique({
+                  where: {
+                    id: foundNote.accountId,
+                  },
+                });
+
                 // send email
-                if (foundNote.account.email) {
+                if (account && account.email) {
                   sendEmail(
-                    foundNote.email,
-                    `your post has been created! view it here: https://notes.site/${foundNote.appleId}
+                    account.email,
+                    `your post has been created! view it here: http://${account.username}.notes.site/posts/${foundNote.appleId}
 
                     thanks for trying notes.site`,
-                    `<p>your post has been created! view it <a href="https://notes.site/${foundNote.appleId}">here</a><br>thanks for trying notes.site</p>`
+                    `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${foundNote.appleId}">here</a><br>thanks for trying notes.site</p>`
                   );
                 } else {
                   console.log("skipping email notification");
