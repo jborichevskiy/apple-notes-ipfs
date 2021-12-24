@@ -43,7 +43,7 @@ function sendEmail(to, bodyText, bodyHTML) {
 }
 
 async function main() {
-  let awaitingUpload = await prisma.note.findMany({
+  let awaitingUpload = await prisma.post.findMany({
     where: {
       ipfsHash: null,
     },
@@ -112,13 +112,13 @@ async function main() {
             .then((r) => r.json())
             .then(async (r) => {
               console.log(r);
-              const foundNote = await prisma.note.findUnique({
+              const foundNote = await prisma.post.findUnique({
                 where: {
                   appleId: note.appleId,
                 },
               });
               if (foundNote) {
-                await prisma.note.update({
+                await prisma.post.update({
                   data: {
                     ipfsHash: r.hash,
                     updatedAt: new Date(),

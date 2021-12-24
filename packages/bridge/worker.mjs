@@ -5,7 +5,7 @@ import { exec } from "child_process";
 const prisma = new PrismaClient();
 
 async function main() {
-  let entry = await prisma.note.findFirst({
+  let entry = await prisma.post.findFirst({
     where: {
       ipfsHash: null,
     },
