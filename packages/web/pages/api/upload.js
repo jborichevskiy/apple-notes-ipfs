@@ -41,13 +41,13 @@ export default async function handler(req, res) {
           .then((r) => r.json())
           .then(async (r) => {
             console.log(r);
-            const foundNote = await prisma.note.findUnique({
+            const foundNote = await prisma.post.findUnique({
               where: {
                 appleId: fileId,
               },
             });
             if (foundNote) {
-              await prisma.note.update({
+              await prisma.post.update({
                 data: {
                   content: result,
                   ipfsHash: r.hash,

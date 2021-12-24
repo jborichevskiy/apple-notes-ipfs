@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   console.log(req.body);
   const id = req.body.url.split("/notes/")[1].split("#")[0];
 
-  await prisma.note.upsert({
+  await prisma.post.upsert({
     create: {
       appleId: id,
     },
