@@ -34,7 +34,6 @@ export default function Page() {
   useEffect(() => {
     if (postData) {
       setIpfsHash(postData.ipfsHash);
-      setMarkdown(postData.content);
     }
   }, [postData]);
 
