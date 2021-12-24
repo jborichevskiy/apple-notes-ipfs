@@ -1,0 +1,24 @@
+.container {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  grid-template-rows: auto;
+  grid-template-areas: 
+    "sidebar main"
+    "sidebar main"
+}
+
+main.body {
+  grid-area: main;
+}
+
+aside.sidebar {
+  grid-area: sidebar;
+}
+
+@media screen and (max-width: 900px) {
+  .container {
+    grid-template-areas: 
+      "sidebar sidebar"
+      "main main"
+  }
+}

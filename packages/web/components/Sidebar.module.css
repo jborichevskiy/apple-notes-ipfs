@@ -1,0 +1,20 @@
+.container {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: xx-large;
+  font-weight: 400;
+}
+
+ul.list {
+  margin-top: 1rem;
+  list-style-type: none;
+}
+
+li.listItem {
+  margin-bottom: 0.25rem;
+  font-size: 18px;
+}

@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import showdown from "showdown";
 import useSwr from "swr";
 
+import Layout from "@components/Layout";
+
 const postFetcher = async (url) => {
   const res = await fetch(url);
 
@@ -18,12 +20,12 @@ const postFetcher = async (url) => {
 
 export default function Page() {
   const router = useRouter();
-  const { pageId } = router.query;
+  const { drawingId } = router.query;
 
   const [ipfsHash, setIpfsHash] = useState("");
 
   const { data: postData, error: postError } = useSwr(
-    pageId && `/api/lookup?id=${pageId}`,
+    drawingId && `/api/lookup?id=${drawingId}`,
     postFetcher
   );
 
@@ -57,15 +59,17 @@ export default function Page() {
   }, [postData]);
 
   return (
-    <div className="document">
-      {!postData && !postError ? "loading..." : null}
-      {postData && !postError ? <div id="content" /> : null}
-      {postError ? postError.message : null}
-      <style jsx>{`
-        .document {
-          padding: 1rem;
-        }
-      `}</style>
-    </div>
+    <Layout>
+      <div className="document">
+        {!postData && !postError ? "loading..." : null}
+        {postData && !postError ? <div id="content" /> : null}
+        {postError ? postError.message : null}
+        <style jsx>{`
+          .document {
+            padding: 1rem;
+          }
+        `}</style>
+      </div>
+    </Layout>
   );
 }
