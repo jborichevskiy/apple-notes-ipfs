@@ -50,10 +50,8 @@ export default function Page() {
     if (!postData || !postData.content) return;
 
     const temporaryTimeout = setTimeout(() => {
-      const target = document.getElementById("markdownContent");
-      const converter = new showdown.Converter();
-      const html = converter.makeHtml(postData.content);
-      target.innerHTML = html;
+      const target = document.getElementById("content");
+      target.innerHTML = postData.htmlContent;
     }, 3000);
     return () => clearTimeout(temporaryTimeout);
   }, [postData]);
@@ -61,7 +59,7 @@ export default function Page() {
   return (
     <div className="document">
       {!postData && !postError ? "loading..." : null}
-      {postData && !postError ? <div id="markdownContent" /> : null}
+      {postData && !postError ? <div id="content" /> : null}
       {postError ? postError.message : null}
       <style jsx>{`
         .document {
