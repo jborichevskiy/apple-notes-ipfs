@@ -14,6 +14,6 @@ export default async function handler(req, res) {
       .status(200)
       .json({ id: id, ipfsHash: note.ipfsHash, content: note.content });
   } else {
-    return res.json({ error: "note not found" });
+    return res.status(404).json({ error: "note not found" });
   }
 }
