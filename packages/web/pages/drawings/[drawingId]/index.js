@@ -20,12 +20,12 @@ const postFetcher = async (url) => {
 
 export default function Page() {
   const router = useRouter();
-  const { pageId } = router.query;
+  const { drawingId } = router.query;
 
   const [ipfsHash, setIpfsHash] = useState("");
 
   const { data: postData, error: postError } = useSwr(
-    pageId && `/api/lookup?id=${pageId}`,
+    drawingId && `/api/lookup?id=${drawingId}`,
     postFetcher
   );
 
