@@ -116,6 +116,9 @@ async function main() {
                 where: {
                   appleId: note.appleId,
                 },
+                select: {
+                  account: true,
+                },
               });
               if (foundNote) {
                 await prisma.post.update({
@@ -126,13 +129,16 @@ async function main() {
                     htmlContent: htmlContent,
                     rtfContent: rtfContent,
                   },
+                  select: {
+                    account: true,
+                  },
                   where: {
                     appleId: note.appleId,
                   },
                 });
 
                 // send email
-                if (foundNote.email) {
+                if (foundNote.account.email) {
                   sendEmail(
                     foundNote.email,
                     `your post has been created! view it here: https://notes.site/${foundNote.appleId}
