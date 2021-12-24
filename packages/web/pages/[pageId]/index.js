@@ -1,25 +1,42 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import showdown from "showdown";
+import useSwr from "swr";
+
+const postFetcher = async (url) => {
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    const data = await res.json();
+    const error = new Error(data.error);
+    error.status = res.status;
+    throw error;
+  }
+
+  return res.json();
+};
 
 export default function Page() {
-  const [ipfsHash, setIpfsHash] = useState("");
-  const [markdown, setMarkdown] = useState("");
-
   const router = useRouter();
-  console.log("🚀 ~ file: index.js ~ line 10 ~ Page ~ router", router)
   const { pageId } = router.query;
 
+  const [ipfsHash, setIpfsHash] = useState("");
+
+  const { data: postData, error: postError } = useSwr(
+    pageId && `/api/lookup?id=${pageId}`,
+    postFetcher
+  );
+
   useEffect(() => {
-    if (pageId) {
-      fetch(`/api/lookup?id=${pageId}`).then((response) =>
-        response.json().then((data) => {
-          setIpfsHash(data.ipfsHash);
-          setMarkdown(data.content);
-        })
-      );
+    console.log("postError", postError);
+  }, [postError]);
+
+  useEffect(() => {
+    if (postData) {
+      setIpfsHash(postData.ipfsHash);
+      setMarkdown(postData.content);
     }
-  }, [pageId]);
+  }, [postData]);
 
   //   useEffect(() => {
   //     fetch(`https://ipfs.io/ipfs/${ipfsHash}`).then((response) =>
@@ -31,18 +48,22 @@ export default function Page() {
   //   }, [ipfsHash]);
 
   useEffect(() => {
-    const a = setTimeout(() => {
+    if (!postData || !postData.content) return;
+
+    const temporaryTimeout = setTimeout(() => {
       const target = document.getElementById("markdownContent");
       const converter = new showdown.Converter();
-      const html = converter.makeHtml(markdown);
+      const html = converter.makeHtml(postData.content);
       target.innerHTML = html;
     }, 3000);
-    return () => clearTimeout(a);
-  }, [markdown]);
+    return () => clearTimeout(temporaryTimeout);
+  }, [postData]);
 
   return (
     <div className="document">
-      <div id="markdownContent">loading...</div>
+      {!postData && !postError ? "loading..." : null}
+      {postData && !postError ? <div id="markdownContent" /> : null}
+      {postError ? postError.message : null}
       <style jsx>{`
         .document {
           padding: 1rem;
