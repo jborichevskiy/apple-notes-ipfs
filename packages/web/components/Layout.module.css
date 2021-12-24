@@ -6,20 +6,25 @@
   grid-template-areas: 
     "sidebar main"
     "sidebar main"
-    "footer main"
+    "footer main";
+  overflow-y: scroll;
 }
 
 main.body {
   grid-area: main;
-  overflow-y: scroll;
 }
 
 aside.sidebar {
   grid-area: sidebar;
 }
 
+div.footer {
+  grid-area: footer;
+}
+
 @media screen and (max-width: 900px) {
   .container {
+    grid-template-rows: auto auto 50px;
     grid-template-areas: 
       "sidebar sidebar"
       "main main"

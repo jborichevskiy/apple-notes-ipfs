@@ -1,4 +1,6 @@
+import { useEffect, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import styles from "@components/Sidebar.module.css";
 import Footer from "@components/Footer";
