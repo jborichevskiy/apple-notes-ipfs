@@ -1,4 +1,4 @@
-import Layout from "@components/posts/PostsLayout";
+import PostsLayout from "@components/posts/PostsLayout";
 import useSwr from "swr";
 import { useState, useEffect } from "react";
 
@@ -27,7 +27,7 @@ export default function Posts() {
   }, [postError]);
 
   return (
-    <Layout>
+    <PostsLayout>
       <div>
         <ul>
           {postData &&
@@ -40,7 +40,7 @@ export default function Posts() {
             })}
         </ul>
       </div>
-    </Layout>
+    </PostsLayout>
   );
 }
 export async function getServerSideProps({ req, res }) {
