@@ -13,7 +13,7 @@ const password = process.env.SMTP_PASSWORD;
 
 const prisma = new PrismaClient();
 
-function sendEmail(to, bodyText, bodyHTML) {
+function sendEmail(to, subject, bodyText, bodyHTML) {
   console.log(`Sending email to ${to}`);
   const transporter = nodemailer.createTransport({
     host: hostname,
@@ -27,11 +27,11 @@ function sendEmail(to, bodyText, bodyHTML) {
     logger: true,
   });
 
-  const info = transporter.sendMail(
+  transporter.sendMail(
     {
       from: '"notes.site" <share@notes.site>',
       to: to,
-      subject: "notes.site publish success",
+      subject: subject,
       text: bodyText,
       html: bodyHTML,
       headers: {},
@@ -137,10 +137,13 @@ async function main() {
                   },
                 });
 
+                const subject = `${foundNote.title} published`;
+
                 // send email
                 if (account && account.email) {
                   sendEmail(
                     account.email,
+                    subject,
                     `your post has been created! view it here: http://${account.username}.notes.site/posts/${foundNote.slug}
 
                     thanks for trying notes.site`,
