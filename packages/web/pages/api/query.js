@@ -33,20 +33,10 @@ export default async function handler(req, res) {
       id: true,
       appleId: true,
       ipfsHash: true,
+      title: true,
       markdownContent: true,
     },
   });
 
-  const postsProcessed = posts.map((post) => {
-    console.log({ post });
-    return {
-      appleId: post.appleId,
-      ipfsHash: post.ipfsHash,
-      title: posts.markdownContent
-        ? post.markdownContent.split("\n")[0].trim()
-        : post.ipfsHash,
-    };
-  });
-
-  return res.status(200).json({ posts: postsProcessed });
+  return res.status(200).json({ posts: posts });
 }
