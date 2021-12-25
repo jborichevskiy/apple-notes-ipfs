@@ -1,6 +1,6 @@
 import { List, BulletList, Code } from "react-content-loader";
 
-import styles from "@components/PostsLoader.module.css";
+import styles from "@components/posts/PostsLoader.module.css";
 
 const PostsLoader = () => {
   return (

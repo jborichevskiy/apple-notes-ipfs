@@ -1,4 +1,4 @@
-import styles from "@components/PostsError.module.css";
+import styles from "@components/posts/PostsError.module.css";
 
 const PostsError = ({ message }) => {
   return (

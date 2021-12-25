@@ -2,9 +2,9 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import useSwr from "swr";
 
-import Layout from "@components/PostsLayout";
-import PostsLoader from "@components/PostsLoader";
-import PostsError from "@components/PostsError";
+import Layout from "@components/posts/PostsLayout";
+import PostsLoader from "@components/posts/PostsLoader";
+import PostsError from "@components/posts/PostsError";
 import Centered from "@components/utils/Centered";
 
 import styles from "@pages/posts/[postId]/[postId].module.css";
