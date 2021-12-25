@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 
       let title;
       // if (titleString.startsWith('"') && titleString.endsWith('"')) {
-      title = titleString.substr(1, titleString.length - 1);
+      title = titleString.substr(1, titleString.length - 2);
       // } else {
       //   title = titleString;
       // }
