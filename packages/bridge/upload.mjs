@@ -87,12 +87,19 @@ async function main() {
           const htmlBuffer = fs.readFileSync(`${dataDir}${note.appleId}.html`);
           const htmlContent = htmlBuffer.toString();
 
+          // clean HTML -- get rid of head tag
+          let cleanedHTML = htmlContent
+            .replaceAll("\n", "")
+            .replace(/<head[^>]*>.+<\/head>/g, "");
+          cleanedHTML = cleanedHTML.replace(/<script[^>]*>.+<\/script>/g, "");
+          // TODO: pre formatted text
+
           const rtfBuffer = fs.readFileSync(`${dataDir}${rtfFile}`);
           const rtfContent = rtfBuffer.toString();
 
           const data = {
             markdown: generatedMarkdown,
-            html: htmlContent,
+            html: cleanedHTML,
             rtf: rtfContent,
             created: new Date(),
             author: note.author,
@@ -123,7 +130,7 @@ async function main() {
                     ipfsHash: r.hash,
                     updatedAt: new Date(),
                     markdownContent: generatedMarkdown,
-                    htmlContent: htmlContent,
+                    htmlContent: cleanedHTML,
                     rtfContent: rtfContent,
                   },
                   where: {
