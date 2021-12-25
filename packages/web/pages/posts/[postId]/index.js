@@ -14,7 +14,7 @@ const postFetcher = async (url) => {
 
   if (!res.ok) {
     const data = await res.json();
-    const error = new Error(data.error);
+    const error = new Error(data.message);
     error.status = res.status;
     throw error;
   }
