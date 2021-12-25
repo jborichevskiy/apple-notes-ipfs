@@ -1,14 +1,13 @@
-import { useEffect, useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
 import styles from "@components/Sidebar.module.css";
-import Footer from "@components/Footer";
 
 const Sidebar = ({ name }) => {
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>{name}</h1>
+      <div className={styles.titleContainer}>
+        <h1 className={styles.title}>{name}</h1>
+      </div>
       <div className={styles.listContainer}>
         <ul className={styles.list}>
           <li className={styles.listItem}>

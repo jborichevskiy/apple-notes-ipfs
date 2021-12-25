@@ -1,4 +1,4 @@
-import Layout from "@components/Layout";
+import Layout from "@components/posts/PostsLayout";
 
 export default function Me() {
   return (
