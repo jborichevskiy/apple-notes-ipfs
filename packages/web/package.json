@@ -2,13 +2,15 @@
   "name": "web",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "prisma generate && next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@prisma/client": "^3.6.0",
+    "feed": "^4.2.2",
+    "moment": "^2.29.1",
     "next": "12.0.7",
     "node-pandoc": "^0.3.0",
     "react": "^17.0.2",
