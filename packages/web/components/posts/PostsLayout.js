@@ -15,17 +15,15 @@ const PostsLayout = ({ children }) => {
   }, []);
 
   return (
-    <>
-      <div className={styles.container}>
-        <aside className={styles.sidebar}>
-          <Sidebar name={pageName} />
-        </aside>
-        <main className={styles.body}>{children}</main>
-        <div className={styles.footer}>
-          <Footer />
-        </div>
+    <div className={styles.container}>
+      <aside className={styles.sidebar}>
+        <Sidebar name={pageName} />
+      </aside>
+      <main className={styles.body}>{children}</main>
+      <div className={styles.footer}>
+        <Footer />
       </div>
-    </>
+    </div>
   );
 };
 
