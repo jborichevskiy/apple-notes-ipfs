@@ -59,7 +59,9 @@ export default async function handler(req, res) {
           appleId: id,
           accountId: account.id,
         },
-        update: {},
+        update: {
+          ipfsHash: null,
+        },
         where: {
           appleId: id,
         },
