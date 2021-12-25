@@ -17,6 +17,7 @@ model Post {
   appleId           String  @unique
   ipfsHash          String?
   title             String?
+  slug              String? @unique
   htmlContent       String?
   rtfContent        String?
   markdownContent   String?
