@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import Sidebar from "@components/Sidebar";
 import Footer from "@components/Footer";
 
-import styles from "@components/Layout.module.css";
+import styles from "@components/PostsLayout.module.css";
 
 const Layout = ({ children }) => {
   const pageName = useMemo(() => {

@@ -1,0 +1,28 @@
+.container {
+  margin-top: -250px;
+}
+
+.innerContainer {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.messageContainer {
+  border-radius: 4px;
+  margin-top: 16px;
+  padding: 2px;
+  background-color: #faf8f5;
+  border: 1px solid #b6ad9a;
+}
+
+@media screen and (max-width: 900px) {
+  .icon {
+    font-size: 36px;
+  }
+}
