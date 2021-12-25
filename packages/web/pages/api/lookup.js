@@ -4,7 +4,9 @@ export const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   const id = req.query.id;
+  const slug = req.query.slug;
   const subdomain = req.headers.host.split(".")[0] || "";
+  console.log({ id, slug, subdomain });
 
   const account = await prisma.account.findUnique({
     where: {
@@ -16,21 +18,22 @@ export default async function handler(req, res) {
     return res.status(404).json({ message: "account not found" });
   }
 
-  const note = await prisma.post.findFirst({
+  const post = await prisma.post.findFirst({
     where: {
       appleId: id,
+      slug,
       accountId: account.id,
     },
   });
 
-  if (note) {
+  if (post) {
     return res.status(200).json({
       id: id,
-      ipfsHash: note.ipfsHash,
-      content: note.markdownContent,
-      htmlContent: note.htmlContent,
+      ipfsHash: post.ipfsHash,
+      content: post.markdownContent,
+      htmlContent: post.htmlContent,
     });
   } else {
-    return res.status(404).json({ message: "note not found" });
+    return res.status(404).json({ message: "post not found" });
   }
 }

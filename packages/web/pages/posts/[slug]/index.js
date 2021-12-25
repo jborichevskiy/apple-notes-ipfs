@@ -7,7 +7,7 @@ import PostsLoader from "@components/posts/PostsLoader";
 import PostsError from "@components/posts/PostsError";
 import Centered from "@components/utils/Centered";
 
-import styles from "@pages/posts/[postId]/[postId].module.css";
+import styles from "@pages/posts/[slug]/[slug].module.css";
 
 const postFetcher = async (url) => {
   const res = await fetch(url);
@@ -24,13 +24,13 @@ const postFetcher = async (url) => {
 
 export default function Page({ host }) {
   const router = useRouter();
-  const { postId } = router.query;
+  const { slug } = router.query;
   const subdomain = host.split(".")[0];
 
   const [ipfsHash, setIpfsHash] = useState("");
 
   const { data: postData, error: postError } = useSwr(
-    postId && `/api/lookup?id=${postId}&subdomain=${subdomain}`,
+    slug && `/api/lookup?slug=${slug}`,
     postFetcher
   );
 
