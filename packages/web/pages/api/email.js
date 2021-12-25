@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 export const prisma = new PrismaClient();
 
-function string_to_slug(str) {
+function string_to_slug(str, preservePeriods = false) {
   str = str.replace(/^\s+|\s+$/g, ""); // trim
   str = str.toLowerCase();
 
@@ -14,7 +14,9 @@ function string_to_slug(str) {
   }
 
   str = str
-    .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
+    .replace(/[^a-z0-9\. -]/g, "") // remove invalid chars
+    // replace dots with dash
+    .replace(/\./g, preservePeriods ? "-" : "")
     .replace(/\s+/g, "-") // collapse whitespace and replace by -
     .replace(/-+/g, "-"); // collapse dashes
 
@@ -35,56 +37,54 @@ export default async function handler(req, res) {
 
       const id = url.split("/notes/")[1].split("#")[0].trim();
       const authorName = req.body.from.name;
-      const authorEmail = req.body.from.email;
+      // const authorEmail = req.body.from.email;
       const titleString = req.body.subject;
 
       let title;
-      // if (titleString.startsWith('"') && titleString.endsWith('"')) {
       title = titleString.substr(1, titleString.length - 2);
-      // } else {
-      //   title = titleString;
+
+      // let account = await prisma.account.findUnique({
+      //   where: {
+      //     email: authorEmail,
+      //   },
+      // });
+
+      // if (!account) {
+      //   const preferredUsername = string_to_slug(
+      //     authorEmail.split("@")[0].trim(),
+      //     (preservePeriods = true)
+      //   );
+      //   const existing = await prisma.account.findUnique({
+      //     where: {
+      //       username: preferredUsername,
+      //     },
+      //   });
+      //   console.log({ existing });
+
+      //   if (!account && existing) {
+      //     const newUsername = `${preferredUsername}1`;
+      //     console.log({ newUsername });
+      //     console.log("username exists, using", newUsername);
+      //     account = await prisma.account.create({
+      //       data: {
+      //         username: newUsername,
+      //         email: authorEmail,
+      //         name: authorName,
+      //       },
+      //     });
+      //   } else {
+      //     console.log("creating account with username", preferredUsername);
+      //     account = await prisma.account.create({
+      //       data: {
+      //         username: preferredUsername,
+      //         email: authorEmail,
+      //         name: authorName,
+      //       },
+      //     });
+      //   }
       // }
-      // console.log({ title });
 
-      let account = await prisma.account.findUnique({
-        where: {
-          email: authorEmail,
-        },
-      });
-
-      if (!account) {
-        const preferredUsername = authorEmail.split("@")[0].trim();
-        const existing = await prisma.account.findUnique({
-          where: {
-            username: preferredUsername,
-          },
-        });
-        console.log({ existing });
-
-        if (!account && existing) {
-          const newUsername = `${preferredUsername}1`;
-          console.log({ newUsername });
-          console.log("username exists, using", newUsername);
-          account = await prisma.account.create({
-            data: {
-              username: newUsername,
-              email: authorEmail,
-              name: authorName,
-            },
-          });
-        } else {
-          console.log("creating account with username", preferredUsername);
-          account = await prisma.account.create({
-            data: {
-              username: preferredUsername,
-              email: authorEmail,
-              name: authorName,
-            },
-          });
-        }
-      }
-
-      const note = await prisma.post.upsert({
+      await prisma.post.upsert({
         create: {
           appleId: id,
           title: title,
