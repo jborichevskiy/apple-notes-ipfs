@@ -4,7 +4,7 @@ export const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   if (req.method == "POST") {
-    console.log("incoming email", req.body.from);
+    console.log("incoming email", req.body);
 
     const r = new RegExp("(https://www.icloud.com/notes/[0-9A-z-#]+)");
 
@@ -17,6 +17,15 @@ export default async function handler(req, res) {
       const id = url.split("/notes/")[1].split("#")[0].trim();
       const authorName = req.body.from.name;
       const authorEmail = req.body.from.email;
+      const titleString = req.body.subject;
+
+      let title;
+      // if (titleString.startsWith('"') && titleString.endsWith('"')) {
+      title = titleString.substr(1, titleString.length - 1);
+      // } else {
+      //   title = titleString;
+      // }
+      // console.log({ title });
 
       let account = await prisma.account.findUnique({
         where: {
@@ -31,9 +40,11 @@ export default async function handler(req, res) {
             username: preferredUsername,
           },
         });
+        console.log({ existing });
 
-        if (existing && existing.length > 0) {
-          const newUsername = `${preferredUsername}${existing.length}`;
+        if (!account && existing) {
+          const newUsername = `${preferredUsername}1`;
+          console.log({ newUsername });
           console.log("username exists, using", newUsername);
           account = await prisma.account.create({
             data: {
@@ -57,10 +68,12 @@ export default async function handler(req, res) {
       const note = await prisma.post.upsert({
         create: {
           appleId: id,
+          title: title,
           accountId: account.id,
         },
         update: {
           ipfsHash: null,
+          // todo: versions
         },
         where: {
           appleId: id,
