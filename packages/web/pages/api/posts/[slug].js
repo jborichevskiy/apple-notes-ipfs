@@ -3,10 +3,9 @@ import { PrismaClient } from "@prisma/client";
 export const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-  const id = req.query.id;
-  const slug = req.query.slug;
+  const { slug } = req.query;
   const subdomain = req.headers.host.split(".")[0] || "";
-  console.log({ id, slug, subdomain });
+  console.log({ slug, subdomain });
 
   const account = await prisma.account.findUnique({
     where: {
@@ -20,7 +19,6 @@ export default async function handler(req, res) {
 
   const post = await prisma.post.findFirst({
     where: {
-      appleId: id,
       slug,
       accountId: account.id,
     },
@@ -28,7 +26,7 @@ export default async function handler(req, res) {
 
   if (post) {
     return res.status(200).json({
-      id: id,
+      title: post.title,
       ipfsHash: post.ipfsHash,
       content: post.markdownContent,
       htmlContent: post.htmlContent,

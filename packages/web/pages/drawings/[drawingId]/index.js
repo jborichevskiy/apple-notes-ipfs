@@ -24,7 +24,7 @@ export default function Page() {
   const [ipfsHash, setIpfsHash] = useState("");
 
   const { data: postData, error: postError } = useSwr(
-    drawingId && `/api/lookup?id=${drawingId}`,
+    drawingId && `/api/posts/${drawingId}`,
     postFetcher
   );
 

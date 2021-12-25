@@ -4,14 +4,6 @@ export const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   const subdomain = req.headers.host.split(".")[0] || "";
-  const id = req.query.id || "";
-
-  // return res.json({
-  //   posts: [
-  //     { ipfsHash: "123123", title: "hello world", appleId: "123123" },
-  //     { ipfsHash: "12222", title: "another post", appleId: "123222" },
-  //   ],
-  // });
 
   const account = await prisma.account.findFirst({
     where: {

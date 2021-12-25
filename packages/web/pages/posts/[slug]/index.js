@@ -30,7 +30,7 @@ export default function Page({ host }) {
   const [ipfsHash, setIpfsHash] = useState("");
 
   const { data: postData, error: postError } = useSwr(
-    slug && `/api/lookup?slug=${slug}`,
+    slug && `/api/posts/${slug}`,
     postFetcher
   );
 

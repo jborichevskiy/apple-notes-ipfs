@@ -18,7 +18,7 @@ const postFetcher = async (url) => {
 
 export default function Posts() {
   const { data: postData, error: postError } = useSwr(
-    `/api/query`,
+    `/api/posts`,
     postFetcher
   );
 
