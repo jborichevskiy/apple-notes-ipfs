@@ -141,10 +141,10 @@ async function main() {
                 if (account && account.email) {
                   sendEmail(
                     account.email,
-                    `your post has been created! view it here: http://${account.username}.notes.site/posts/${foundNote.appleId}
+                    `your post has been created! view it here: http://${account.username}.notes.site/posts/${foundNote.slug}
 
                     thanks for trying notes.site`,
-                    `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${foundNote.appleId}">here</a><br>thanks for trying notes.site</p>`
+                    `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${foundNote.slug}">here</a><br>thanks for trying notes.site</p>`
                   );
                 } else {
                   console.log("skipping email notification");
