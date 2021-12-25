@@ -13,10 +13,9 @@ export default async function handler(req, res) {
   //   ],
   // });
 
-  const account = await prisma.account.findMany({
+  const account = await prisma.account.findFirst({
     where: {
       username: subdomain ? subdomain : undefined,
-      id: id ? id : undefined,
     },
   });
 
