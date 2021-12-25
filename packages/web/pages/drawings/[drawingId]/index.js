@@ -1,8 +1,9 @@
+
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import useSwr from "swr";
 
-import Layout from "@components/posts/PostsLayout";
+import PostsLayout from "@components/posts/PostsLayout";
 
 const postFetcher = async (url) => {
   const res = await fetch(url);
@@ -58,7 +59,7 @@ export default function Page() {
   }, [postData]);
 
   return (
-    <Layout>
+    <PostsLayout>
       <div className="document">
         {!postData && !postError ? "loading..." : null}
         {postData && !postError ? <div id="content" /> : null}
@@ -69,6 +70,6 @@ export default function Page() {
           }
         `}</style>
       </div>
-    </Layout>
+    </PostsLayout>
   );
 }

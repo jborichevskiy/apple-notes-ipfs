@@ -1,11 +1,12 @@
 import { useMemo } from "react";
+import Head from "next/head";
 
 import Sidebar from "@components/Sidebar";
 import Footer from "@components/Footer";
 
 import styles from "@components/posts/PostsLayout.module.css";
 
-const Layout = ({ children }) => {
+const PostsLayout = ({ children }) => {
   const pageName = useMemo(() => {
     if (typeof window === "undefined") return "";
     return window.location.hostname
@@ -26,4 +27,4 @@ const Layout = ({ children }) => {
   );
 };
 
-export default Layout;
+export default PostsLayout;

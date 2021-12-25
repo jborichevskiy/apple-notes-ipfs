@@ -1,9 +1,9 @@
-import Layout from "@components/posts/PostsLayout";
+import PostsLayout from "@components/posts/PostsLayout";
 
 export default function Drawings() {
   return (
-    <Layout>
+    <PostsLayout>
       drawings
-    </Layout>
+    </PostsLayout>
   );
 }
