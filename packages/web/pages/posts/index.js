@@ -34,7 +34,7 @@ export default function Posts() {
             postData.posts.map((post) => {
               return (
                 <li key={post.appleId}>
-                  <a href="/">{post.title}</a>
+                  <a href={`posts/${post.appleId}`}>{post.title}</a>
                 </li>
               );
             })}
