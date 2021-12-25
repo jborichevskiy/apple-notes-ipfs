@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import useSwr from "swr";
 
-import Layout from "@components/posts/PostsLayout";
+import PostsLayout from "@components/posts/PostsLayout";
 import PostsLoader from "@components/posts/PostsLoader";
 import PostsError from "@components/posts/PostsError";
 import Centered from "@components/utils/Centered";
@@ -60,13 +60,13 @@ export default function Page({ host }) {
   }, [postData]);
 
   return (
-    <Layout>
+    <PostsLayout>
       <div className={styles.container}>
         {!postData && !postError ? <PostsLoader /> : null}
         {postData && !postError ? <div id="content" /> : null}
         {postError ? <PostsError message={postError.message} /> : null}
       </div>
-    </Layout>
+    </PostsLayout>
   );
 }
 
