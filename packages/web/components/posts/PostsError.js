@@ -6,9 +6,11 @@ const PostsError = ({ message }) => {
       <div className={styles.innerContainer}>
         <span className={styles.icon}>⚠️</span>
         <span>Something went wrong!</span>
-        <div className={styles.messageContainer}>
-          <pre>{JSON.stringify(message, null, 2)}</pre>
-        </div>
+        {message && (
+          <div className={styles.messageContainer}>
+            <span>{JSON.stringify(message, null, 2)}</span>
+          </div>
+        )}
       </div>
     </div>
   );

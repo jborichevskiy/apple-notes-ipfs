@@ -27,3 +27,13 @@
     flex: 1;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .loader {
+    opacity: 0.25;
+  }
+  
+  .codeLoader {
+    opacity: 0.25;
+  }
+}

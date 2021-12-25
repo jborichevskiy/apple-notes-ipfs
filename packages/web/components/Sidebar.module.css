@@ -4,9 +4,16 @@
   flex-direction: column;
 }
 
+.titleContainer {
+  display: flex;
+  align-items: center;
+}
+
 .title {
-  font-size: 48px;
   font-weight: 500;
+  white-space: wrap;
+  width: 400px;
+  overflow-wrap: break-word;
 }
 
 ul.list {

@@ -64,11 +64,7 @@ export default function Page({ host }) {
       <div className={styles.container}>
         {!postData && !postError ? <PostsLoader /> : null}
         {postData && !postError ? <div id="content" /> : null}
-        {postError ? (
-          <Centered>
-            <PostsError message={postError.message} />
-          </Centered>
-        ) : null}
+        {postError ? <PostsError message={postError.message} /> : null}
       </div>
     </Layout>
   );
