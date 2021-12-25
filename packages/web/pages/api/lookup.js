@@ -31,6 +31,6 @@ export default async function handler(req, res) {
       htmlContent: note.htmlContent,
     });
   } else {
-    return res.status(404).json({ error: "note not found" });
+    return res.status(404).json({ message: "note not found" });
   }
 }

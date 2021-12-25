@@ -1,16 +1,20 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import showdown from "showdown";
 import useSwr from "swr";
 
-import Layout from "@components/Layout";
+import Layout from "@components/posts/PostsLayout";
+import PostsLoader from "@components/posts/PostsLoader";
+import PostsError from "@components/posts/PostsError";
+import Centered from "@components/utils/Centered";
+
+import styles from "@pages/posts/[postId]/[postId].module.css";
 
 const postFetcher = async (url) => {
   const res = await fetch(url);
 
   if (!res.ok) {
     const data = await res.json();
-    const error = new Error(data.error);
+    const error = new Error(data.message);
     error.status = res.status;
     throw error;
   }
@@ -31,10 +35,6 @@ export default function Page({ host }) {
   );
 
   useEffect(() => {
-    console.log("postError", postError);
-  }, [postError]);
-
-  useEffect(() => {
     if (postData) {
       setIpfsHash(postData.ipfsHash);
     }
@@ -52,24 +52,19 @@ export default function Page({ host }) {
   useEffect(() => {
     if (!postData || !postData.htmlContent) return;
 
-    const temporaryTimeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
       const target = document.getElementById("content");
       target.innerHTML = postData.htmlContent;
-    }, 3000);
-    return () => clearTimeout(temporaryTimeout);
+    }, 1);
+    return () => clearTimeout(timeout);
   }, [postData]);
 
   return (
     <Layout>
-      <div className="document">
-        {!postData && !postError ? "loading..." : null}
+      <div className={styles.container}>
+        {!postData && !postError ? <PostsLoader /> : null}
         {postData && !postError ? <div id="content" /> : null}
-        {postError ? postError.message : null}
-        <style jsx>{`
-          .document {
-            padding: 1rem;
-          }
-        `}</style>
+        {postError ? <PostsError message={postError.message} /> : null}
       </div>
     </Layout>
   );
