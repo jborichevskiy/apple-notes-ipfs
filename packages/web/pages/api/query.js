@@ -34,6 +34,7 @@ export default async function handler(req, res) {
       ipfsHash: true,
       title: true,
       markdownContent: true,
+      slug: true,
     },
   });
 
