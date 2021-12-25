@@ -85,27 +85,6 @@ export default function Post() {
           font-size: 16px;
         }
       `}</style>
-      {/* TODO: Better co-locate the mobile styles */}
-      <style>{`
-        @media screen and (max-width: 900px) {
-          p.p1 {
-            font-size: 28px;
-          }
-          p.p2 {
-            font-size: 20px;
-          }
-          p.p3 {
-            font-size: 12px;
-          }
-          p.p4 {
-            font-size: 12px;
-            font-family: monospace;
-          }
-          p.p5 {
-            font-size: 12px;
-          }
-        }
-      `}</style>
     </PostsLayout>
   );
 }
