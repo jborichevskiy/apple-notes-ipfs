@@ -4,7 +4,7 @@ export const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   const id = req.query.id;
-  const subdomain = req.query.subdomain;
+  const subdomain = req.headers.host.split(".")[0] || "";
 
   const account = await prisma.account.findUnique({
     where: {
