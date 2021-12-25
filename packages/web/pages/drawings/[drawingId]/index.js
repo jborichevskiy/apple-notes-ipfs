@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import useSwr from "swr";
 
-import Layout from "@components/PostsLayout";
+import Layout from "@components/posts/PostsLayout";
 
 const postFetcher = async (url) => {
   const res = await fetch(url);
