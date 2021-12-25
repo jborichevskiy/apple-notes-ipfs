@@ -17,6 +17,8 @@
   border-radius: 4px;
   margin-top: 16px;
   padding: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
   background-color: #faf8f5;
   border: 1px solid #b6ad9a;
 }
