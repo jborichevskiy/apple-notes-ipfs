@@ -4,14 +4,6 @@
   height: 100%;
 }
 
-
-/*
-  Styling for actual blog content
-*/
-p.p1 {
-  font-size: 16px !important;
-}
-
 @media screen and (max-width: 900px) {
   .container {
     padding: 1rem;
