@@ -1,9 +1,25 @@
 .container {
+  padding-left: 4rem;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 }
 
-.container h3 {
-  font-weight: 400;
+.container a {
+  text-decoration: none;
+}
+
+.container a::before {
+  content: '❮ '
+}
+
+.container a::after {
+  content: ' ❯'
+}
+
+@media screen and (max-width: 900px) {
+  .container {
+    padding-left: unset;
+    justify-content: center;
+  }
 }

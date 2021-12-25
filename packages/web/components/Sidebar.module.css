@@ -10,9 +10,10 @@
 }
 
 .title {
-  font-weight: 500;
+  font-size: 48px;
+  font-weight: 700;
   white-space: wrap;
-  width: 400px;
+  width: 300px;
   overflow-wrap: break-word;
 }
 
@@ -28,6 +29,15 @@ li.listItem {
   margin-bottom: 0.25rem;
   font-size: 36px;
   font-weight: 300;
+}
+
+li.listItem a {
+  text-decoration: none;
+  color: inherit;
+}
+
+li.listItem a:hover::before {
+  content: "› ";
 }
 
 @media screen and (max-width: 900px) {
