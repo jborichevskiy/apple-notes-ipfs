@@ -14,7 +14,7 @@
 				<array>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3218</integer>
+						<integer>3605</integer>
 						<key>MacroActionType</key>
 						<string>Semaphore</string>
 						<key>SemaphoreAction</key>
@@ -26,7 +26,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3219</integer>
+						<integer>3606</integer>
 						<key>IsDefaultApplication</key>
 						<true/>
 						<key>MacroActionType</key>
@@ -38,7 +38,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3220</integer>
+						<integer>3607</integer>
 						<key>MacroActionType</key>
 						<string>SetVariableToText</string>
 						<key>Text</key>
@@ -50,7 +50,7 @@
 						<key>Action</key>
 						<string>IgnoreCaseRegEx</string>
 						<key>ActionUID</key>
-						<integer>3221</integer>
+						<integer>3608</integer>
 						<key>Destination</key>
 						<string>Variable</string>
 						<key>DestinationVariable</key>
@@ -70,7 +70,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2386</integer>
+						<integer>3609</integer>
 						<key>IsActive</key>
 						<false/>
 						<key>MacroActionType</key>
@@ -82,7 +82,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3222</integer>
+						<integer>3610</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -92,7 +92,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3223</integer>
+						<integer>3611</integer>
 						<key>KeyCode</key>
 						<integer>36</integer>
 						<key>MacroActionType</key>
@@ -108,7 +108,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3224</integer>
+						<integer>3612</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -118,7 +118,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3225</integer>
+						<integer>3613</integer>
 						<key>AllWindows</key>
 						<true/>
 						<key>AlreadyActivatedActionType</key>
@@ -141,7 +141,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3226</integer>
+						<integer>3614</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -153,7 +153,7 @@
 						<key>Action</key>
 						<string>MoveAndClick</string>
 						<key>ActionUID</key>
-						<integer>3227</integer>
+						<integer>3615</integer>
 						<key>Button</key>
 						<integer>0</integer>
 						<key>ClickCount</key>
@@ -185,7 +185,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3228</integer>
+						<integer>3616</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -195,7 +195,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3229</integer>
+						<integer>3617</integer>
 						<key>KeyCode</key>
 						<integer>0</integer>
 						<key>MacroActionType</key>
@@ -211,7 +211,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3230</integer>
+						<integer>3618</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -221,7 +221,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3231</integer>
+						<integer>3619</integer>
 						<key>KeyCode</key>
 						<integer>8</integer>
 						<key>MacroActionType</key>
@@ -237,7 +237,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2430</integer>
+						<integer>3620</integer>
 						<key>KeyCode</key>
 						<integer>123</integer>
 						<key>MacroActionType</key>
@@ -253,7 +253,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3232</integer>
+						<integer>3621</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -263,7 +263,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3233</integer>
+						<integer>3622</integer>
 						<key>Append</key>
 						<false/>
 						<key>Destination</key>
@@ -281,7 +281,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2445</integer>
+						<integer>3623</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -293,7 +293,7 @@
 						<key>ActionName</key>
 						<string>Get Owner of Shared Note</string>
 						<key>ActionUID</key>
-						<integer>2444</integer>
+						<integer>3624</integer>
 						<key>DisplayKind</key>
 						<string>Briefly</string>
 						<key>HonourFailureSettings</key>
@@ -317,7 +317,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2447</integer>
+						<integer>3625</integer>
 						<key>MacroActionType</key>
 						<string>SetVariableToText</string>
 						<key>Text</key>
@@ -327,38 +327,25 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2448</integer>
-						<key>DisplayKind</key>
-						<string>Window</string>
-						<key>HonourFailureSettings</key>
-						<true/>
-						<key>IncludeStdErr</key>
+						<integer>2819</integer>
+						<key>Append</key>
 						<false/>
+						<key>Destination</key>
+						<string>/Users/m1/Desktop/Data/%Variable%NOTE_ID%.email.txt</string>
+						<key>Encoding</key>
+						<string>UTF8</string>
+						<key>Format</key>
+						<string>PlainText</string>
+						<key>Format2</key>
+						<string>PlainText</string>
 						<key>MacroActionType</key>
-						<string>ExecuteShellScript</string>
-						<key>Path</key>
-						<string></string>
+						<string>WriteFile</string>
 						<key>Source</key>
-						<string>Nothing</string>
-						<key>Text</key>
-						<string>curl --location --request POST 'https://notes.site/api/set-owner-email' \
---header 'Content-Type: application/json' \
---data-raw '{
-     "email": "'"$KMVAR_OWNER_EMAIL"'",
-     "appleId": "'"$KMVAR_NOTE_ID"'"
-}'</string>
-						<key>TimeOutAbortsMacro</key>
-						<true/>
-						<key>TrimResults</key>
-						<true/>
-						<key>TrimResultsNew</key>
-						<true/>
-						<key>UseText</key>
-						<true/>
+						<string>Clipboard</string>
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2446</integer>
+						<integer>3626</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -368,7 +355,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2441</integer>
+						<integer>3627</integer>
 						<key>AllWindows</key>
 						<true/>
 						<key>AlreadyActivatedActionType</key>
@@ -391,7 +378,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2437</integer>
+						<integer>3628</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -405,7 +392,7 @@
 						<key>ActionName</key>
 						<string>Click Delete</string>
 						<key>ActionUID</key>
-						<integer>2432</integer>
+						<integer>3629</integer>
 						<key>Button</key>
 						<integer>0</integer>
 						<key>ClickCount</key>
@@ -437,7 +424,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2433</integer>
+						<integer>3630</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -451,7 +438,7 @@
 						<key>ActionName</key>
 						<string>Click Delete</string>
 						<key>ActionUID</key>
-						<integer>2438</integer>
+						<integer>3631</integer>
 						<key>Button</key>
 						<integer>0</integer>
 						<key>ClickCount</key>
@@ -483,7 +470,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2442</integer>
+						<integer>3632</integer>
 						<key>MacroActionType</key>
 						<string>Pause</string>
 						<key>Time</key>
@@ -497,7 +484,7 @@
 						<key>ActionName</key>
 						<string>Click Delete</string>
 						<key>ActionUID</key>
-						<integer>2443</integer>
+						<integer>3633</integer>
 						<key>Button</key>
 						<integer>0</integer>
 						<key>ClickCount</key>
@@ -531,7 +518,7 @@
 						<key>Action</key>
 						<string>Quit</string>
 						<key>ActionUID</key>
-						<integer>2427</integer>
+						<integer>3634</integer>
 						<key>Application</key>
 						<dict>
 							<key>BundleIdentifier</key>
@@ -548,7 +535,39 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2435</integer>
+						<integer>3635</integer>
+						<key>DisplayKind</key>
+						<string>Window</string>
+						<key>HonourFailureSettings</key>
+						<true/>
+						<key>IncludeStdErr</key>
+						<false/>
+						<key>IsActive</key>
+						<false/>
+						<key>MacroActionType</key>
+						<string>ExecuteShellScript</string>
+						<key>Path</key>
+						<string></string>
+						<key>Source</key>
+						<string>Nothing</string>
+						<key>Text</key>
+						<string>curl --location --request POST 'https://notes.site/api/conclude' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+     "appleId": "'"$KMVAR_NOTE_ID"'"
+}'</string>
+						<key>TimeOutAbortsMacro</key>
+						<true/>
+						<key>TrimResults</key>
+						<true/>
+						<key>TrimResultsNew</key>
+						<true/>
+						<key>UseText</key>
+						<true/>
+					</dict>
+					<dict>
+						<key>ActionUID</key>
+						<integer>3636</integer>
 						<key>DisplayKind</key>
 						<string>Window</string>
 						<key>HonourFailureSettings</key>
@@ -574,7 +593,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>2436</integer>
+						<integer>3637</integer>
 						<key>DisplayKind</key>
 						<string>Large</string>
 						<key>HonourFailureSettings</key>
@@ -602,7 +621,7 @@
 					</dict>
 					<dict>
 						<key>ActionUID</key>
-						<integer>3234</integer>
+						<integer>3638</integer>
 						<key>MacroActionType</key>
 						<string>Semaphore</string>
 						<key>SemaphoreAction</key>
@@ -614,13 +633,13 @@
 				<key>CreationDate</key>
 				<real>661202571.58106399</real>
 				<key>ModificationDate</key>
-				<real>662171416.10198796</real>
+				<real>662200316.48238599</real>
 				<key>Name</key>
 				<string>Accept Note Share [LIVE]</string>
 				<key>Triggers</key>
 				<array/>
 				<key>UID</key>
-				<string>99C4BC83-05E2-4EEA-B333-5022A1B75A5F</string>
+				<string>1ACD4247-549E-4969-8022-8AA6FF1EF298</string>
 			</dict>
 		</array>
 		<key>Name</key>
