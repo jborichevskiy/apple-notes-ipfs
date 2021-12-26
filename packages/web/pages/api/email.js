@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { string_to_slug } from "./utils";
 
 export const prisma = new PrismaClient();
 
@@ -27,7 +26,6 @@ export default async function handler(req, res) {
         data: {
           appleId: id,
           title: title,
-          slug: string_to_slug(title),
           senderEmail: req.body.from.email,
         },
       });

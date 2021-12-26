@@ -192,6 +192,7 @@ async function main() {
         accountId: account.id,
         ipfsHash: ipfsResponseJson.hash,
         title: pendingNote.title,
+        slug: string_to_slug(pendingNote.title),
         // markdownContent: generatedMarkdown,
         htmlContent: cleanedHTML,
         rtfContent: rtfContent,
