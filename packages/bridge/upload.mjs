@@ -44,10 +44,33 @@ function sendEmail(to, subject, bodyText, bodyHTML) {
   );
 }
 
+async function getAccount(preferredUsername, email) {
+  let account;
+  const account = await prisma.account.findUnique({
+    where: {
+      username: preferredUsername,
+    },
+  });
+
+  if (!account) {
+    account = await prisma.account.create({
+      data: {
+        username: preferredUsername,
+        email: email,
+      },
+    });
+  }
+
+  return account;
+}
+
 async function main() {
   const pendingNote = await prisma.noteIngestion.findFirst({ where: {} });
   const files = await fs.promises.readdir(dataDir);
   const rtfFile = files.find((f) => f.includes(`${pendingNote.appleId}.rtf`));
+  const emailFile = files.find((f) =>
+    f.includes(`${pendingNote.appleId}.email.txt`)
+  );
 
   console.log({ rtfFile });
 
@@ -69,68 +92,87 @@ async function main() {
     console.log(`stdout: ${stdout}`);
   });
 
-  // create our markdown file
-  const args = ["-f", "rtf", "-t", "gfm"];
-  nodePandoc(absPathRtf, args, async (err, generatedMarkdown) => {
-    if (err) {
-      return res.json({ error: err });
-    }
+  if (err) {
+    return res.json({ error: err });
+  }
 
-    const htmlBuffer = fs.readFileSync(`${dataDir}${pendingNote.appleId}.html`);
-    const htmlContent = htmlBuffer.toString();
+  const htmlBuffer = fs.readFileSync(`${dataDir}${pendingNote.appleId}.html`);
+  const htmlContent = htmlBuffer.toString();
 
-    // clean HTML -- get rid of head tag
-    let cleanedHTML = htmlContent
-      .replaceAll("\n", "")
-      .replace(/<head[^>]*>.+<\/head>/g, "");
-    cleanedHTML = cleanedHTML.replace(/<script[^>]*>.+<\/script>/g, "");
-    // TODO: pre formatted text
+  // clean HTML -- get rid of head tag
+  let cleanedHTML = htmlContent
+    .replaceAll("\n", "")
+    .replace(/<head[^>]*>.+<\/head>/g, "");
+  cleanedHTML = cleanedHTML.replace(/<script[^>]*>.+<\/script>/g, "");
+  // TODO: pre formatted text
 
-    const rtfBuffer = fs.readFileSync(`${dataDir}${rtfFile}`);
-    const rtfContent = rtfBuffer.toString();
+  const rtfBuffer = fs.readFileSync(`${dataDir}${rtfFile}`);
+  const rtfContent = rtfBuffer.toString();
 
-    const postDataToIPFS = {
-      markdown: generatedMarkdown,
-      html: cleanedHTML,
-      rtf: rtfContent,
-      created: new Date(),
-      // author: pendingNote.author,
-      id: pendingNote.appleId,
-    };
+  const emailBuffer = fs.readFileSync(`${dataDir}${emailFile}`);
+  const emailFileContent = emailBuffer.toString();
 
-    console.log("uploading", postDataToIPFS);
+  const postDataToIPFS = {
+    markdown: generatedMarkdown,
+    html: cleanedHTML,
+    rtf: rtfContent,
+    created: new Date(),
+    // author: pendingNote.author,
+    id: pendingNote.appleId,
+  };
 
-    // upload to IFPS
-    const ipfsResponse = await fetch("http://137.184.218.83:3000/uploadJSON", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(postDataToIPFS),
-    });
-    const ipfsResponseJson = await ipfsResponse.json();
-    console.log(ipfsResponseJson);
+  console.log("uploading", postDataToIPFS);
 
-    const post = await prisma.post.upsert({
-      create: {
-        appleId: pendingNote.appleId,
-        ipfsHash: ipfsResponseJson.hash,
-        title: pendingNote.title,
-        markdownContent: generatedMarkdown,
-        htmlContent: cleanedHTML,
-        rtfContent: rtfContent,
-      },
-      update: {
-        ipfsHash: ipfsResponseJson.hash,
-        markdownContent: generatedMarkdown,
-        htmlContent: cleanedHTML,
-        rtfContent: rtfContent,
-        updatedAt: new Date(),
-      },
-      where: {
-        appleId: pendingNote.appleId,
-      },
-    });
+  // upload to IFPS
+  const ipfsResponse = await fetch("http://137.184.218.83:3000/uploadJSON", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(postDataToIPFS),
+  });
+
+  const ipfsResponseJson = await ipfsResponse.json();
+  console.log(ipfsResponseJson);
+
+  const preferredUsername = string_to_slug(email.split("@")[0].trim(), true);
+
+  let account = await getAccount(preferredUsername);
+
+  await prisma.post.update({
+    data: {
+      accountId: account.id,
+    },
+    where: {
+      appleId: appleId,
+    },
+  });
+
+  await prisma.noteIngestion.delete({
+    where: {
+      appleId: appleId,
+    },
+  });
+
+  const post = await prisma.post.upsert({
+    create: {
+      appleId: pendingNote.appleId,
+      ipfsHash: ipfsResponseJson.hash,
+      title: pendingNote.title,
+      markdownContent: generatedMarkdown,
+      htmlContent: cleanedHTML,
+      rtfContent: rtfContent,
+    },
+    update: {
+      ipfsHash: ipfsResponseJson.hash,
+      markdownContent: generatedMarkdown,
+      htmlContent: cleanedHTML,
+      rtfContent: rtfContent,
+      updatedAt: new Date(),
+    },
+    where: {
+      appleId: pendingNote.appleId,
+    },
   });
 }
 

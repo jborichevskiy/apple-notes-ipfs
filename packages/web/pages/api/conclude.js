@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   if (req.method == "POST") {
     console.log(req.body);
 
-    const { email, appleId } = req.body;
+    const { appleId } = req.body;
 
     const post = await prisma.post.findUnique({
       where: {
@@ -20,53 +20,27 @@ export default async function handler(req, res) {
       return res.status(404).json({ message: "post not found" });
     }
 
-    if (post.accountId) {
-      return res.status(200).json({
-        message: "post already has an account associated with it",
-      });
-    } else {
-      const preferredUsername = string_to_slug(
-        email.split("@")[0].trim(),
-        true
-      );
+    const account = await prisma.account.findUnique({
+      where: {
+        id: post.accountId,
+      },
+    });
 
-      const existing = await prisma.account.findUnique({
-        where: {
-          username: preferredUsername,
-        },
-      });
-
-      let account;
-      if (!existing) {
-        console.log("creating account with username", preferredUsername);
-        account = await prisma.account.create({
-          data: {
-            username: preferredUsername,
-            email: email,
-            // name: authorName,
-          },
-        });
-      } else {
-        const newUsername = `${preferredUsername}1`;
-        console.log("username exists, using", newUsername);
-        account = await prisma.account.create({
-          data: {
-            username: newUsername,
-            email: email,
-            // name: authorName,
-          },
-        });
-      }
-
-      await prisma.post.update({
-        data: {
-          accountId: account.id,
-        },
-        where: {
-          appleId: appleId,
-        },
-      });
+    if (!account) {
+      return res.status(404).json({ message: "account not found" });
     }
+
+    const subject = `${post.title} published`;
+
+    // send email
+    sendEmail(
+      account.email,
+      subject,
+      `your post has been created! view it here: http://${account.username}.notes.site/posts/${post.slug}
+
+        thanks for trying notes.site`,
+      `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${post.slug}">here</a><br>thanks for trying notes.site</p>`
+    );
 
     res.status(200).json({ status: "ok" });
   }
