@@ -17,6 +17,14 @@ async function main() {
       async (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
+          await prisma.noteIngestion.update({
+            data: {
+              status: "error - keyboard maestro error",
+            },
+            where: {
+              id: queuedNote.id,
+            },
+          });
           return;
         }
         if (stderr) {
