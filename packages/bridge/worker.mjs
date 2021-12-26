@@ -14,7 +14,7 @@ async function main() {
     );
     exec(
       `osascript -e \'tell application "Keyboard Maestro Engine" to do script "C40BD8A5-4BD1-4AED-AF90-9AF9C879388C" with parameter "${queuedNote.appleId}"\'`,
-      (error, stdout, stderr) => {
+      async (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
           return;
