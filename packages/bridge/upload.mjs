@@ -43,19 +43,19 @@ function sendEmail(to, subject, bodyText, bodyHTML) {
 }
 
 async function main() {
-  let awaitingUpload = await prisma.post.findMany({
+  let postsAwaitingUpload = await prisma.post.findMany({
     where: {
       ipfsHash: null,
     },
   });
-  console.log({ awaitingUpload });
+  console.log({ postsAwaitingUpload });
 
   const dataDir = process.env.DATA_DIR;
 
   fs.readdir(dataDir, (err, files) => {
-    awaitingUpload.forEach((note) => {
-      const rtfFile = files.find((f) => f.includes(`${note.appleId}.rtf`));
-      // const htmlFile = files.find((f) => f.includes(`${note.appleId}.html`));
+    postsAwaitingUpload.forEach((post) => {
+      const rtfFile = files.find((f) => f.includes(`${post.appleId}.rtf`));
+      // const htmlFile = files.find((f) => f.includes(`${post.appleId}.html`));
 
       console.log({ rtfFile });
 
@@ -63,7 +63,7 @@ async function main() {
         const absPathRtf = `${dataDir}${rtfFile}`;
 
         // convert RTF to HTML
-        const command = `/usr/bin/textutil -convert html ${absPathRtf} -output ${dataDir}${note.appleId}.html`;
+        const command = `/usr/bin/textutil -convert html ${absPathRtf} -output ${dataDir}${post.appleId}.html`;
         console.log({ command });
         exec(command, (error, stdout, stderr) => {
           if (error) {
@@ -84,7 +84,7 @@ async function main() {
             return res.json({ error: err });
           }
 
-          const htmlBuffer = fs.readFileSync(`${dataDir}${note.appleId}.html`);
+          const htmlBuffer = fs.readFileSync(`${dataDir}${post.appleId}.html`);
           const htmlContent = htmlBuffer.toString();
 
           // clean HTML -- get rid of head tag
@@ -102,8 +102,8 @@ async function main() {
             html: cleanedHTML,
             rtf: rtfContent,
             created: new Date(),
-            author: note.author,
-            id: note.appleId,
+            author: post.author,
+            id: post.appleId,
           };
 
           console.log("uploading", data);
@@ -119,12 +119,12 @@ async function main() {
             .then((r) => r.json())
             .then(async (r) => {
               console.log(r);
-              const foundNote = await prisma.post.findUnique({
+              let foundPost = await prisma.post.findUnique({
                 where: {
                   appleId: note.appleId,
                 },
               });
-              if (foundNote) {
+              if (foundPost) {
                 await prisma.post.update({
                   data: {
                     ipfsHash: r.hash,
@@ -138,23 +138,33 @@ async function main() {
                   },
                 });
 
-                const account = await prisma.account.findUnique({
+                console.log("pre-fetch", foundPost);
+
+                foundPost = await prisma.post.findUnique({
                   where: {
-                    id: foundNote.accountId,
+                    appleId: note.appleId,
                   },
                 });
 
-                const subject = `${foundNote.title} published`;
+                console.log("post-fetch", foundPost);
+
+                const account = await prisma.account.findUnique({
+                  where: {
+                    id: foundPost.accountId,
+                  },
+                });
+
+                const subject = `${foundPost.title} published`;
 
                 // send email
                 if (account && account.email) {
                   sendEmail(
                     account.email,
                     subject,
-                    `your post has been created! view it here: http://${account.username}.notes.site/posts/${foundNote.slug}
+                    `your post has been created! view it here: http://${account.username}.notes.site/posts/${foundPost.slug}
 
                     thanks for trying notes.site`,
-                    `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${foundNote.slug}">here</a><br>thanks for trying notes.site</p>`
+                    `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${foundPost.slug}">here</a><br>thanks for trying notes.site</p>`
                   );
                 } else {
                   console.log("skipping email notification");
