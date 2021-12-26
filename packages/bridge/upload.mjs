@@ -67,7 +67,7 @@ async function getAccount(preferredUsername, email) {
 async function main() {
   const pendingNote = await prisma.noteIngestion.findFirst({
     where: {
-      status: "pending",
+      status: "processed",
     },
   });
   if (!pendingNote) return;
@@ -143,7 +143,7 @@ async function main() {
 
   await prisma.noteIngestion.update({
     data: {
-      status: "processed",
+      status: "uploaded",
     },
     where: {
       appleId: appleId,
