@@ -94,10 +94,6 @@ async function main() {
     console.log(`stdout: ${stdout}`);
   });
 
-  if (err) {
-    return res.json({ error: err });
-  }
-
   const htmlBuffer = fs.readFileSync(`${dataDir}${pendingNote.appleId}.html`);
   const htmlContent = htmlBuffer.toString();
 
