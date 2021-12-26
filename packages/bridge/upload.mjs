@@ -115,7 +115,7 @@ async function main() {
   const emailFileContent = emailBuffer.toString();
 
   const postDataToIPFS = {
-    markdown: generatedMarkdown,
+    // markdown: generatedMarkdown,
     html: cleanedHTML,
     rtf: rtfContent,
     created: new Date(),
@@ -138,17 +138,7 @@ async function main() {
   console.log(ipfsResponseJson);
 
   const preferredUsername = string_to_slug(email.split("@")[0].trim(), true);
-
   let account = await getAccount(preferredUsername);
-
-  await prisma.noteIngestion.update({
-    data: {
-      status: "uploaded",
-    },
-    where: {
-      appleId: appleId,
-    },
-  });
 
   const post = await prisma.post.upsert({
     create: {
@@ -156,19 +146,28 @@ async function main() {
       accountId: account.id,
       ipfsHash: ipfsResponseJson.hash,
       title: pendingNote.title,
-      markdownContent: generatedMarkdown,
+      // markdownContent: generatedMarkdown,
       htmlContent: cleanedHTML,
       rtfContent: rtfContent,
     },
     update: {
       ipfsHash: ipfsResponseJson.hash,
-      markdownContent: generatedMarkdown,
+      // markdownContent: generatedMarkdown,
       htmlContent: cleanedHTML,
       rtfContent: rtfContent,
       updatedAt: new Date(),
     },
     where: {
       appleId: pendingNote.appleId,
+    },
+  });
+
+  await prisma.noteIngestion.update({
+    data: {
+      status: "uploaded",
+    },
+    where: {
+      appleId: appleId,
     },
   });
 }
