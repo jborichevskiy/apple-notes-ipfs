@@ -28,7 +28,6 @@ export default async function handler(req, res) {
           appleId: id,
           title: title,
           slug: string_to_slug(title),
-          accountId: account.id,
         },
         update: {
           ipfsHash: null,
