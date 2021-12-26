@@ -26,7 +26,7 @@ async function main() {
               status: "error - keyboard maestro error",
             },
             where: {
-              appleId: appleId,
+              id: queuedNote.id,
             },
           });
           return;
