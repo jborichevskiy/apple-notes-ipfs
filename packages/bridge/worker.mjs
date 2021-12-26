@@ -21,6 +21,14 @@ async function main() {
         }
         if (stderr) {
           console.log(`stderr: ${stderr}`);
+          await prisma.noteIngestion.update({
+            data: {
+              status: "error - keyboard maestro error",
+            },
+            where: {
+              appleId: appleId,
+            },
+          });
           return;
         }
         console.log(`stdout: ${stdout}`);
