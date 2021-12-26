@@ -134,7 +134,7 @@ async function main() {
                     rtfContent: rtfContent,
                   },
                   where: {
-                    appleId: note.appleId,
+                    id: foundPost.id,
                   },
                 });
 
