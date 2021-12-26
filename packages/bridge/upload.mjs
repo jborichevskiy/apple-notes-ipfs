@@ -46,7 +46,7 @@ function sendEmail(to, subject, bodyText, bodyHTML) {
 
 async function getAccount(preferredUsername, email) {
   let account;
-  const account = await prisma.account.findUnique({
+  account = await prisma.account.findUnique({
     where: {
       username: preferredUsername,
     },
@@ -175,28 +175,6 @@ async function main() {
     },
   });
 }
-
-// const account = await prisma.account.findUnique({
-//   where: {
-//     id: foundPost.accountId,
-//   },
-// });
-
-// const subject = `${foundPost.title} published`;
-
-// // send email
-// if (account && account.email) {
-//   sendEmail(
-//     account.email,
-//     subject,
-//     `your post has been created! view it here: http://${account.username}.notes.site/posts/${foundPost.slug}
-
-//     thanks for trying notes.site`,
-//     `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${foundPost.slug}">here</a><br>thanks for trying notes.site</p>`
-//   );
-// } else {
-//   console.log("skipping email notification");
-// }
 
 // update emailSent = true
 
