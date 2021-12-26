@@ -185,6 +185,8 @@ async function main() {
     const preferredUsername = string_to_slug(email.split("@")[0], true);
 
     let account = await getAccount(preferredUsername, email);
+    const slug = string_to_slug(pendingNote.title);
+    console.log({ slug });
 
     const post = await prisma.post.upsert({
       create: {
@@ -192,7 +194,7 @@ async function main() {
         accountId: account.id,
         ipfsHash: ipfsResponseJson.hash,
         title: pendingNote.title,
-        slug: string_to_slug(pendingNote.title),
+        slug: slug,
         // markdownContent: generatedMarkdown,
         htmlContent: cleanedHTML,
         rtfContent: rtfContent,
