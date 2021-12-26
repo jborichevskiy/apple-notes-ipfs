@@ -1,27 +1,7 @@
 import { PrismaClient } from "@prisma/client";
+import { string_to_slug } from "./utils";
 
 export const prisma = new PrismaClient();
-
-function string_to_slug(str, preservePeriods = false) {
-  str = str.replace(/^\s+|\s+$/g, ""); // trim
-  str = str.toLowerCase();
-
-  // remove accents, swap ñ for n, etc
-  var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
-  var to = "aaaaeeeeiiiioooouuuunc------";
-  for (var i = 0, l = from.length; i < l; i++) {
-    str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
-  }
-
-  str = str
-    .replace(/[^a-z0-9\. -]/g, "") // remove invalid chars
-    // replace dots with dash
-    .replace(/\./g, preservePeriods ? "-" : "")
-    .replace(/\s+/g, "-") // collapse whitespace and replace by -
-    .replace(/-+/g, "-"); // collapse dashes
-
-  return str;
-}
 
 export default async function handler(req, res) {
   if (req.method == "POST") {
@@ -42,47 +22,6 @@ export default async function handler(req, res) {
 
       let title;
       title = titleString.substr(1, titleString.length - 2);
-
-      // let account = await prisma.account.findUnique({
-      //   where: {
-      //     email: authorEmail,
-      //   },
-      // });
-
-      // if (!account) {
-      //   const preferredUsername = string_to_slug(
-      //     authorEmail.split("@")[0].trim(),
-      //     (preservePeriods = true)
-      //   );
-      //   const existing = await prisma.account.findUnique({
-      //     where: {
-      //       username: preferredUsername,
-      //     },
-      //   });
-      //   console.log({ existing });
-
-      //   if (!account && existing) {
-      //     const newUsername = `${preferredUsername}1`;
-      //     console.log({ newUsername });
-      //     console.log("username exists, using", newUsername);
-      //     account = await prisma.account.create({
-      //       data: {
-      //         username: newUsername,
-      //         email: authorEmail,
-      //         name: authorName,
-      //       },
-      //     });
-      //   } else {
-      //     console.log("creating account with username", preferredUsername);
-      //     account = await prisma.account.create({
-      //       data: {
-      //         username: preferredUsername,
-      //         email: authorEmail,
-      //         name: authorName,
-      //       },
-      //     });
-      //   }
-      // }
 
       await prisma.post.upsert({
         create: {

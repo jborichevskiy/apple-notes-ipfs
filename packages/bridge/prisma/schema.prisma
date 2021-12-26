@@ -12,8 +12,8 @@ datasource db {
 
 model Post {
   id                Int     @id @default(autoincrement())
-  account           Account @relation(fields: [accountId], references: [id])
-  accountId         Int
+  account           Account? @relation(fields: [accountId], references: [id])
+  accountId         Int?
   appleId           String  @unique
   ipfsHash          String?
   title             String?
@@ -29,7 +29,6 @@ model Account {
   id                Int     @id @default(autoincrement())
   username          String  @unique
   email             String  @unique
-  // otherEmails       String[]
   name              String?
   posts             Post[]
 }
