@@ -67,7 +67,7 @@ async function getAccount(preferredUsername, email) {
   let account;
   account = await prisma.account.findUnique({
     where: {
-      username: preferredUsername,
+      email: email,
     },
   });
 
@@ -186,7 +186,7 @@ async function main() {
 
     let account = await getAccount(preferredUsername, email);
     const slug = string_to_slug(pendingNote.title);
-    console.log({ slug });
+    console.log({ account, slug });
 
     const post = await prisma.post.upsert({
       create: {
