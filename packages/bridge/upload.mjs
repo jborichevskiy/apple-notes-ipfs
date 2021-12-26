@@ -121,7 +121,7 @@ async function main() {
               console.log(r);
               let foundPost = await prisma.post.findUnique({
                 where: {
-                  appleId: note.appleId,
+                  id: post.id,
                 },
               });
               if (foundPost) {
