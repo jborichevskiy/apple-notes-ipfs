@@ -1,28 +1,19 @@
-import { useRouter } from "next/router";
 import Head from "next/head";
-import { useEffect, useMemo } from "react";
-import useSwr from "swr";
+import { useEffect } from "react";
 
 import PostsLayout from "@components/posts/PostsLayout";
-import PostsLoader from "@components/posts/PostsLoader";
 import PostsError from "@components/posts/PostsError";
 
 import buildPageTitleString from "@utils/posts/build-page-title-string";
 
+import { PrismaClient } from "@prisma/client";
+
+export const prisma = new PrismaClient();
+
 import styles from "@pages/posts/[slug]/[slug].module.css";
 
-export default function Post() {
-  const { query } = useRouter();
-  const { slug } = query;
-  const subdomain = useMemo(() => {
-    if (typeof window === "undefined") return;
-    return window.location.hostname.split(".")[0];
-  }, []);
-
-  const { data: postData, error: postError } = useSwr(
-    slug && `/api/posts/${slug}`
-  );
-  const { title, htmlContent } = postData || {};
+export default function Post({ post, error, subdomain }) {
+  const { title, htmlContent } = post || {};
 
   // const [ipfsHash, setIpfsHash] = useState("");
 
@@ -61,13 +52,15 @@ export default function Post() {
         <meta property="og:type" content="article" />
       </Head>
       <div className={styles.container}>
-        {!postData && !postError ? <PostsLoader /> : null}
-        {postData && !postError ? <div id="content" /> : null}
-        {postError ? <PostsError message={postError.message} /> : null}
+        {post && !error ? <div id="content" /> : null}
+        {error ? <PostsError message={error.message} /> : null}
       </div>
 
       {/* TODO: Better co-locate the styles */}
       <style>{`
+        a {
+          color: #dca10d
+        }
         p.p1 {
           font-size: 32px;
         }
@@ -84,7 +77,71 @@ export default function Post() {
         p.p5 {
           font-size: 16px;
         }
+        p.p6 {
+          font-size: 16px;
+        }
+        ul.ul1 {
+          list-style-type: disc;
+        }
+        li.li3 {
+          font-size: 16px;
+        }
       `}</style>
     </PostsLayout>
   );
 }
+
+export const getServerSideProps = async (context) => {
+  const { req, params } = context;
+  const subdomain = req.headers.host.split(".")[0] || "";
+  const { slug } = params;
+
+  // NOTE: This should be a function or imported method that makes a call to the backend.
+  const account = await prisma.account.findFirst({
+    where: {
+      username: subdomain,
+    },
+  });
+
+  if (!account) {
+    return {
+      subdomain,
+      post: null,
+      error: {
+        message: "account not found",
+      },
+      notFound: true,
+    };
+  }
+
+  // NOTE: This should be a function or imported method that makes a call to the backend.
+  const post = await prisma.post.findFirst({
+    where: {
+      // visible: true,
+      slug,
+      accountId: account.id,
+    },
+  });
+
+  if (!post) {
+    return {
+      subdomain,
+      post: null,
+      error: {
+        message: "post not found",
+      },
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      subdomain,
+      post: {
+        title: post.title,
+        htmlContent: post.htmlContent,
+      },
+      error: null,
+    },
+  };
+};
