@@ -66,6 +66,8 @@ async function getAccount(preferredUsername, email) {
 
 async function main() {
   const pendingNote = await prisma.noteIngestion.findFirst({ where: {} });
+  if (!pendingNote) return;
+
   const files = await fs.promises.readdir(dataDir);
   const rtfFile = files.find((f) => f.includes(`${pendingNote.appleId}.rtf`));
   const emailFile = files.find((f) =>
