@@ -45,7 +45,7 @@ async function main() {
             status: "processing",
           },
           where: {
-            appleId: appleId,
+            appleId: queuedNote.id,
           },
         });
       }
