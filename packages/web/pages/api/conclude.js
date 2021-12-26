@@ -9,20 +9,20 @@ export default async function handler(req, res) {
 
     const { email, appleId } = req.body;
 
-    const note = await prisma.post.findUnique({
+    const post = await prisma.post.findUnique({
       where: {
         appleId: appleId,
       },
     });
-    console.log({ note });
+    console.log({ post });
 
-    if (!note) {
-      return res.status(404).json({ message: "note not found" });
+    if (!post) {
+      return res.status(404).json({ message: "post not found" });
     }
 
-    if (note.accountId) {
+    if (post.accountId) {
       return res.status(200).json({
-        message: "note already has an account associated with it",
+        message: "post already has an account associated with it",
       });
     } else {
       const preferredUsername = string_to_slug(

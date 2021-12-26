@@ -7,6 +7,8 @@ import nodePandoc from "node-pandoc";
 import fetch from "node-fetch";
 import { exec } from "child_process";
 
+const dataDir = process.env.DATA_DIR;
+
 const hostname = process.env.SMTP_HOST;
 const username = process.env.SMTP_USERNAME;
 const password = process.env.SMTP_PASSWORD;
@@ -43,141 +45,117 @@ function sendEmail(to, subject, bodyText, bodyHTML) {
 }
 
 async function main() {
-  let postsAwaitingUpload = await prisma.post.findMany({
-    where: {
-      ipfsHash: null,
-    },
+  const pendingNote = await prisma.noteIngestion.findFirst({ where: {} });
+  const files = await fs.promises.readdir(dataDir);
+  const rtfFile = files.find((f) => f.includes(`${pendingNote.appleId}.rtf`));
+
+  console.log({ rtfFile });
+
+  if (!rtfFile) return;
+
+  const absPathRtf = `${dataDir}${rtfFile}`;
+
+  // convert RTF to HTML
+  const command = `/usr/bin/textutil -convert html ${absPathRtf} -output ${dataDir}${pendingNote.appleId}.html`;
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
   });
-  console.log({ postsAwaitingUpload });
 
-  const dataDir = process.env.DATA_DIR;
+  // create our markdown file
+  const args = ["-f", "rtf", "-t", "gfm"];
+  nodePandoc(absPathRtf, args, async (err, generatedMarkdown) => {
+    if (err) {
+      return res.json({ error: err });
+    }
 
-  fs.readdir(dataDir, (err, files) => {
-    postsAwaitingUpload.forEach((post) => {
-      const rtfFile = files.find((f) => f.includes(`${post.appleId}.rtf`));
-      // const htmlFile = files.find((f) => f.includes(`${post.appleId}.html`));
+    const htmlBuffer = fs.readFileSync(`${dataDir}${pendingNote.appleId}.html`);
+    const htmlContent = htmlBuffer.toString();
 
-      console.log({ rtfFile });
+    // clean HTML -- get rid of head tag
+    let cleanedHTML = htmlContent
+      .replaceAll("\n", "")
+      .replace(/<head[^>]*>.+<\/head>/g, "");
+    cleanedHTML = cleanedHTML.replace(/<script[^>]*>.+<\/script>/g, "");
+    // TODO: pre formatted text
 
-      if (rtfFile) {
-        const absPathRtf = `${dataDir}${rtfFile}`;
+    const rtfBuffer = fs.readFileSync(`${dataDir}${rtfFile}`);
+    const rtfContent = rtfBuffer.toString();
 
-        // convert RTF to HTML
-        const command = `/usr/bin/textutil -convert html ${absPathRtf} -output ${dataDir}${post.appleId}.html`;
-        console.log({ command });
-        exec(command, (error, stdout, stderr) => {
-          if (error) {
-            console.log(`error: ${error.message}`);
-            return;
-          }
-          if (stderr) {
-            console.log(`stderr: ${stderr}`);
-            return;
-          }
-          console.log(`stdout: ${stdout}`);
-        });
+    const postDataToIPFS = {
+      markdown: generatedMarkdown,
+      html: cleanedHTML,
+      rtf: rtfContent,
+      created: new Date(),
+      // author: pendingNote.author,
+      id: pendingNote.appleId,
+    };
 
-        // create our markdown file
-        const args = ["-f", "rtf", "-t", "gfm"];
-        nodePandoc(absPathRtf, args, (err, generatedMarkdown) => {
-          if (err) {
-            return res.json({ error: err });
-          }
+    console.log("uploading", postDataToIPFS);
 
-          const htmlBuffer = fs.readFileSync(`${dataDir}${post.appleId}.html`);
-          const htmlContent = htmlBuffer.toString();
+    // upload to IFPS
+    const ipfsResponse = await fetch("http://137.184.218.83:3000/uploadJSON", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(postDataToIPFS),
+    });
+    const ipfsResponseJson = await ipfsResponse.json();
+    console.log(ipfsResponseJson);
 
-          // clean HTML -- get rid of head tag
-          let cleanedHTML = htmlContent
-            .replaceAll("\n", "")
-            .replace(/<head[^>]*>.+<\/head>/g, "");
-          cleanedHTML = cleanedHTML.replace(/<script[^>]*>.+<\/script>/g, "");
-          // TODO: pre formatted text
-
-          const rtfBuffer = fs.readFileSync(`${dataDir}${rtfFile}`);
-          const rtfContent = rtfBuffer.toString();
-
-          const data = {
-            markdown: generatedMarkdown,
-            html: cleanedHTML,
-            rtf: rtfContent,
-            created: new Date(),
-            author: post.author,
-            id: post.appleId,
-          };
-
-          console.log("uploading", data);
-          // upload to IFPS
-          fetch("http://137.184.218.83:3000/uploadJSON", {
-            // fetch("http://localhost:4001/uploadJSON", {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-            },
-            body: JSON.stringify(data),
-          })
-            .then((r) => r.json())
-            .then(async (r) => {
-              console.log(r);
-              let foundPost = await prisma.post.findUnique({
-                where: {
-                  id: post.id,
-                },
-              });
-              if (foundPost) {
-                await prisma.post.update({
-                  data: {
-                    ipfsHash: r.hash,
-                    updatedAt: new Date(),
-                    markdownContent: generatedMarkdown,
-                    htmlContent: cleanedHTML,
-                    rtfContent: rtfContent,
-                  },
-                  where: {
-                    id: foundPost.id,
-                  },
-                });
-
-                console.log("pre-fetch", foundPost);
-
-                foundPost = await prisma.post.findUnique({
-                  where: {
-                    appleId: note.appleId,
-                  },
-                });
-
-                console.log("post-fetch", foundPost);
-
-                const account = await prisma.account.findUnique({
-                  where: {
-                    id: foundPost.accountId,
-                  },
-                });
-
-                const subject = `${foundPost.title} published`;
-
-                // send email
-                if (account && account.email) {
-                  sendEmail(
-                    account.email,
-                    subject,
-                    `your post has been created! view it here: http://${account.username}.notes.site/posts/${foundPost.slug}
-
-                    thanks for trying notes.site`,
-                    `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${foundPost.slug}">here</a><br>thanks for trying notes.site</p>`
-                  );
-                } else {
-                  console.log("skipping email notification");
-                }
-
-                // update emailSent = true
-              }
-            });
-        });
-      }
+    const post = await prisma.post.upsert({
+      create: {
+        appleId: pendingNote.appleId,
+        ipfsHash: ipfsResponseJson.hash,
+        title: pendingNote.title,
+        markdownContent: generatedMarkdown,
+        htmlContent: cleanedHTML,
+        rtfContent: rtfContent,
+      },
+      update: {
+        ipfsHash: ipfsResponseJson.hash,
+        markdownContent: generatedMarkdown,
+        htmlContent: cleanedHTML,
+        rtfContent: rtfContent,
+        updatedAt: new Date(),
+      },
+      where: {
+        appleId: pendingNote.appleId,
+      },
     });
   });
 }
 
+// const account = await prisma.account.findUnique({
+//   where: {
+//     id: foundPost.accountId,
+//   },
+// });
+
+// const subject = `${foundPost.title} published`;
+
+// // send email
+// if (account && account.email) {
+//   sendEmail(
+//     account.email,
+//     subject,
+//     `your post has been created! view it here: http://${account.username}.notes.site/posts/${foundPost.slug}
+
+//     thanks for trying notes.site`,
+//     `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${foundPost.slug}">here</a><br>thanks for trying notes.site</p>`
+//   );
+// } else {
+//   console.log("skipping email notification");
+// }
+
+// update emailSent = true
+
 await main();
-// sendEmail("jonborichef@icloud.com", "test", "<p>test</p>");

@@ -32,3 +32,12 @@ model Account {
   name              String?
   posts             Post[]
 }
+
+model NoteIngestion{
+  id                Int     @id @default(autoincrement())
+  senderEmail       String
+  title             String
+  appleId           String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now())
+}

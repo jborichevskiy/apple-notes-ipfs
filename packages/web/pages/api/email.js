@@ -23,22 +23,15 @@ export default async function handler(req, res) {
       let title;
       title = titleString.substr(1, titleString.length - 2);
 
-      await prisma.post.upsert({
-        create: {
+      await prisma.noteIngestion.create({
+        data: {
           appleId: id,
           title: title,
-          slug: string_to_slug(title),
-        },
-        update: {
-          ipfsHash: null,
-          // todo: versions
-        },
-        where: {
-          appleId: id,
+          senderEmail: req.body.from.email,
         },
       });
 
-      res.status(200).json({ status: "note ingested" });
+      res.status(200).json({ status: "note scheduled for ingestion" });
     } else {
       res.status(200).json({ status: "no valid url found" });
     }
