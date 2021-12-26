@@ -24,6 +24,14 @@ async function main() {
           return;
         }
         console.log(`stdout: ${stdout}`);
+        await prisma.noteIngestion.update({
+          data: {
+            status: "processing",
+          },
+          where: {
+            appleId: appleId,
+          },
+        });
       }
     );
   }

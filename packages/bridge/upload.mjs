@@ -169,6 +169,4 @@ async function main() {
   });
 }
 
-// update emailSent = true
-
 await main();
