@@ -38,6 +38,7 @@ model NoteIngestion{
   senderEmail       String
   title             String
   appleId           String
+  status            String   @default("pending")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @default(now())
 }

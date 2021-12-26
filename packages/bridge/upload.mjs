@@ -65,7 +65,11 @@ async function getAccount(preferredUsername, email) {
 }
 
 async function main() {
-  const pendingNote = await prisma.noteIngestion.findFirst({ where: {} });
+  const pendingNote = await prisma.noteIngestion.findFirst({
+    where: {
+      status: "pending",
+    },
+  });
   if (!pendingNote) return;
 
   const files = await fs.promises.readdir(dataDir);
