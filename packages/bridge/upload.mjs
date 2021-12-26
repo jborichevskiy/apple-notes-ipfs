@@ -229,7 +229,7 @@ async function main() {
       `your post has been created! view it here: http://${account.username}.notes.site/posts/${post.slug}
 
         thanks for trying notes.site`,
-      `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${post.slug}">here</a><br>thanks for trying notes.site</p>`
+      `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${post.slug}">here</a>. In a few minutes, your post will be indexed on ipfs <a href="https://ipfs.io/ipfs/${ipfsResponseJson.hash}">here</a>.<br><br>thanks for trying notes.site!</p>`
     );
 
     const response = await fetch("https://notes.site/api/conclude", {
