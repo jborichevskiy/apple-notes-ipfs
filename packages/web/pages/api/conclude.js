@@ -1,5 +1,39 @@
 import { PrismaClient } from "@prisma/client";
 import { string_to_slug } from "./utils";
+import nodemailer from "nodemailer";
+
+const hostname = process.env.SMTP_HOST;
+const username = process.env.SMTP_USERNAME;
+const password = process.env.SMTP_PASSWORD;
+
+function sendEmail(to, subject, bodyText, bodyHTML) {
+  console.log(`Sending email to ${to}`);
+  const transporter = nodemailer.createTransport({
+    host: hostname,
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: username,
+      pass: password,
+    },
+    logger: true,
+  });
+
+  transporter.sendMail(
+    {
+      from: '"notes.site" <share@notes.site>',
+      to: to,
+      subject: subject,
+      text: bodyText,
+      html: bodyHTML,
+      headers: {},
+    },
+    (res) => {
+      console.log({ res });
+    }
+  );
+}
 
 export const prisma = new PrismaClient();
 

@@ -85,6 +85,21 @@ async function getAccount(preferredUsername, email) {
   return account;
 }
 
+// Wait for file to exist, checks every 2 seconds by default
+function getFile(path, timeout = 2000) {
+  const intervalObj = setInterval(function () {
+    const file = path;
+    const fileExists = fs.existsSync(file);
+
+    console.log("Checking for: ", file);
+    console.log("Exists: ", fileExists);
+
+    if (fileExists) {
+      clearInterval(intervalObj);
+    }
+  }, timeout);
+}
+
 async function main() {
   const pendingNote = await prisma.noteIngestion.findFirst({
     where: {
@@ -107,9 +122,18 @@ async function main() {
 
   // convert RTF to HTML
   const command = `/usr/bin/textutil -convert html ${absPathRtf} -output ${dataDir}${pendingNote.appleId}.html`;
+  console.log({ command });
   exec(command, (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
+      // await prisma.noteIngestion.update({
+      //   data: {
+      //     status: "error - textutil",
+      //   },
+      //   where: {
+      //     id: pendingNote.id,
+      //   },
+      // });
       return;
     }
     if (stderr) {
@@ -119,7 +143,9 @@ async function main() {
     console.log(`stdout: ${stdout}`);
   });
 
-  const htmlBuffer = fs.readFileSync(`${dataDir}${pendingNote.appleId}.html`);
+  const htmlPathAbs = `${dataDir}${pendingNote.appleId}.html`;
+  // getFile(htmlPathAbs);
+  const htmlBuffer = fs.readFileSync(htmlPathAbs);
   const htmlContent = htmlBuffer.toString();
 
   // clean HTML -- get rid of head tag
@@ -158,8 +184,11 @@ async function main() {
   const ipfsResponseJson = await ipfsResponse.json();
   console.log(ipfsResponseJson);
 
-  const preferredUsername = string_to_slug(email.split("@")[0].trim(), true);
-  let account = await getAccount(preferedUsername);
+  const preferredUsername = string_to_slug(
+    emailFileContent.trim().split("@")[0],
+    true
+  );
+  let account = await getAccount(preferredUsername);
 
   const post = await prisma.post.upsert({
     create: {
@@ -188,9 +217,21 @@ async function main() {
       status: "uploaded",
     },
     where: {
-      appleId: appleId,
+      id: pendingNote.id,
     },
   });
+
+  const response = await fetch("https://notes.site/api/conclude", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      appleId: pendingNote.appleId,
+    }),
+  });
+  const responseJson = response.json();
+  console.log({ responseJson });
 }
 
 await main();

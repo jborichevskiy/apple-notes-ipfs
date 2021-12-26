@@ -5,7 +5,11 @@ import { exec } from "child_process";
 const prisma = new PrismaClient();
 
 async function main() {
-  let queuedNote = await prisma.noteIngestion.findFirst({ where: {} });
+  let queuedNote = await prisma.noteIngestion.findFirst({
+    where: {
+      status: "pending",
+    },
+  });
   console.log({ queuedNote });
 
   if (queuedNote) {
