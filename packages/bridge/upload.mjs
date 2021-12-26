@@ -15,6 +15,27 @@ const password = process.env.SMTP_PASSWORD;
 
 const prisma = new PrismaClient();
 
+export function string_to_slug(str, preservePeriods = false) {
+  str = str.replace(/^\s+|\s+$/g, ""); // trim
+  str = str.toLowerCase();
+
+  // remove accents, swap ñ for n, etc
+  var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+  var to = "aaaaeeeeiiiioooouuuunc------";
+  for (var i = 0, l = from.length; i < l; i++) {
+    str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
+  }
+
+  str = str
+    .replace(/[^a-z0-9\. -]/g, "") // remove invalid chars
+    // replace dots with dash
+    .replace(/\./g, preservePeriods ? "-" : "")
+    .replace(/\s+/g, "-") // collapse whitespace and replace by -
+    .replace(/-+/g, "-"); // collapse dashes
+
+  return str;
+}
+
 function sendEmail(to, subject, bodyText, bodyHTML) {
   console.log(`Sending email to ${to}`);
   const transporter = nodemailer.createTransport({
@@ -138,7 +159,7 @@ async function main() {
   console.log(ipfsResponseJson);
 
   const preferredUsername = string_to_slug(email.split("@")[0].trim(), true);
-  let account = await getAccount(preferredUsername);
+  let account = await getAccount(preferedUsername);
 
   const post = await prisma.post.upsert({
     create: {
