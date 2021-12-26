@@ -137,16 +137,10 @@ async function main() {
 
   let account = await getAccount(preferredUsername);
 
-  await prisma.post.update({
+  await prisma.noteIngestion.update({
     data: {
-      accountId: account.id,
+      status: "processed",
     },
-    where: {
-      appleId: appleId,
-    },
-  });
-
-  await prisma.noteIngestion.delete({
     where: {
       appleId: appleId,
     },
@@ -155,6 +149,7 @@ async function main() {
   const post = await prisma.post.upsert({
     create: {
       appleId: pendingNote.appleId,
+      accountId: account.id,
       ipfsHash: ipfsResponseJson.hash,
       title: pendingNote.title,
       markdownContent: generatedMarkdown,
