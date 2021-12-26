@@ -185,7 +185,8 @@ async function main() {
     const preferredUsername = string_to_slug(email.split("@")[0], true);
 
     let account = await getAccount(preferredUsername, email);
-    const slug = string_to_slug(pendingNote.title);
+    // TODO: avoid collisions
+    const slug = string_to_slug(pendingNote.title.substring(0, 20));
     console.log({ account, slug });
 
     const post = await prisma.post.upsert({
@@ -193,7 +194,7 @@ async function main() {
         appleId: pendingNote.appleId,
         accountId: account.id,
         ipfsHash: ipfsResponseJson.hash,
-        title: pendingNote.title,
+        title: pendingNote.title.substring(0, 20),
         slug: slug,
         // markdownContent: generatedMarkdown,
         htmlContent: cleanedHTML,
