@@ -46,10 +46,10 @@ async function main() {
         console.log(`stdout: ${stdout}`);
         await prisma.noteIngestion.update({
           data: {
-            status: "processing",
+            status: "processed",
           },
           where: {
-            appleId: queuedNote.id,
+            id: queuedNote.id,
           },
         });
       }

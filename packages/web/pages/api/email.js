@@ -27,6 +27,7 @@ export default async function handler(req, res) {
         data: {
           appleId: id,
           title: title,
+          slug: string_to_slug(title),
           senderEmail: req.body.from.email,
         },
       });
