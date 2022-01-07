@@ -124,14 +124,14 @@ async function main() {
   exec(command, async (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
-      // await prisma.noteIngestion.update({
-      //   data: {
-      //     status: "error - textutil",
-      //   },
-      //   where: {
-      //     id: pendingNote.id,
-      //   },
-      // });
+      await prisma.noteIngestion.update({
+        data: {
+          status: "error - textutil",
+        },
+        where: {
+          id: pendingNote.id,
+        },
+      });
       return;
     }
     if (stderr) {
@@ -148,7 +148,7 @@ async function main() {
     // clean HTML -- get rid of head tag
     let cleanedHTML = htmlContent
       .replaceAll("\n", "")
-      .replace(/<head[^>]*>.+<\/head>/g, "");
+      .replaceAll(/<meta[^>]*>.+<\/meta>/g, "");
     cleanedHTML = cleanedHTML.replace(/<script[^>]*>.+<\/script>/g, "");
     // TODO: pre formatted text
 
