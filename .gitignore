@@ -1,1 +1,7 @@
 packages/web/.env
+packages/bridge/prisma/migrations
+packages/web/prisma/migrations
+
+
+packages/.DS_Store
+*.DS_Store
