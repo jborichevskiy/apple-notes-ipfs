@@ -23,6 +23,7 @@ model Post {
   markdownContent   String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @default(now())
+  attachments       String[]
 }
 
 model Account {
