@@ -193,8 +193,8 @@ async function main() {
     // upload attachments from dir
 
     const files = await fs.promises.readdir(dataDir);
-    const noteAttachments = files.filter((f) =>
-      f.includes(`${pendingNote.appleId}`)
+    const noteAttachments = files.filter(
+      (f) => f.includes(`${pendingNote.appleId}`) && f.includes(".png")
     );
 
     const attachmentIPFSHashes = noteAttachments.map((fileName) => {
