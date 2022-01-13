@@ -89,7 +89,7 @@ export default function Post({ post, error, subdomain }) {
         }
         p.p4 {
           font-size: 16px;
-          font-family: monospace;
+          // font-family: monospace;
         }
         p.p5 {
           font-size: 16px;
