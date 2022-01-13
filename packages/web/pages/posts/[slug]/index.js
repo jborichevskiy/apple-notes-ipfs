@@ -40,7 +40,7 @@ export default function Post({ post, error, subdomain }) {
       target.innerHTML = htmlContent;
 
       if (attachments && attachments.length) {
-        const attachmentsDiv = document.getElementById("content");
+        const attachmentsDiv = document.getElementById("attachments");
         console.log({ attachments });
         attachmentsDiv.innerHTML = `<h3>Attachments</h3>${attachments.map(
           (ipfsHash) => {
@@ -66,12 +66,15 @@ export default function Post({ post, error, subdomain }) {
       </Head>
       <div className={styles.container}>
         {post && !error ? <div id="content" /> : null}
-        {post && !error ? <div id="attachments" /> : null}
+        {post && !error ? <div id="attachments" className="footer" /> : null}
         {error ? <PostsError message={error.message} /> : null}
       </div>
 
       {/* TODO: Better co-locate the styles */}
       <style>{`
+        .footer {
+          margin-top: 2rem;
+        }
         a {
           color: #dca10d
         }
