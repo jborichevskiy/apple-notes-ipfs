@@ -230,33 +230,6 @@ async function main() {
     const desiredSlug = string_to_slug(pendingNote.title.substring(0, 20));
     console.log({ account, desiredSlug });
 
-    // upload attachments from dir
-
-    const files = await fs.promises.readdir(dataDir);
-    const noteAttachments = files.filter(
-      (f) => f.includes(`${pendingNote.appleId}`) && f.includes(".png")
-    );
-
-    const attachmentIPFSHashes = noteAttachments.map((fileName) => {
-      const path = `${dataDir}${fileName}`;
-      console.log({ path });
-      const cmd = `curl --location --request POST 'http://137.184.218.83:3000/upload' --form '=@"${path}"' -s | python -c "import sys, json; print(json.load(sys.stdin)['hash'])"`;
-      console.log({ cmd });
-
-      exec(cmd, (error, stdout, stderr) => {
-        if (error) {
-          console.log(`error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
-        }
-        console.log(`stdout: ${stdout}`);
-        return stdout.trim();
-      });
-    });
-
     // loops through current slugs and appends an `-n` to end
     const slug = await getValidSlug(
       desiredSlug,
@@ -275,7 +248,7 @@ async function main() {
         // markdownContent: generatedMarkdown,
         htmlContent: cleanedHTML,
         rtfContent: rtfContent,
-        attachments: attachmentIPFSHashes,
+        // attachments: attachmentIPFSHashes,
         // type: pendingNote.type,
       },
       update: {
@@ -284,13 +257,56 @@ async function main() {
         htmlContent: cleanedHTML,
         rtfContent: rtfContent,
         updatedAt: new Date(),
-        attachments: attachmentIPFSHashes,
+        // attachments: attachmentIPFSHashes,
         slug: slug,
       },
       where: {
         appleId: pendingNote.appleId,
       },
     });
+
+    // upload attachments from dir
+
+    const files = await fs.promises.readdir(dataDir);
+    const noteAttachments = files.filter(
+      (f) => f.includes(`${pendingNote.appleId}`) && f.includes(".png")
+    );
+    console.log({ noteAttachments });
+
+    noteAttachments.map((fileName) => {
+      const path = `${dataDir}${fileName}`;
+      console.log({ path });
+      const cmd = `curl --location --request POST 'http://137.184.218.83:3000/upload' --form '=@"${path}"' -s | python -c "import sys, json; print(json.load(sys.stdin)['hash'])"`;
+      console.log({ cmd });
+
+      exec(cmd, async (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+
+        if (!stdout) return;
+
+        console.log("adding", stdout.trim(), "to attachments");
+        // todo: add ipfs hash to db record inside this promise loop
+        await prisma.post.update({
+          where: {
+            id: post.id,
+          },
+          data: {
+            attachments: [...post.attachments, stdout.trim()],
+          },
+        });
+
+        return stdout.trim();
+      });
+    });
+    // console.log({ attachmentIPFSHashes });
 
     await prisma.noteIngestion.update({
       data: {
