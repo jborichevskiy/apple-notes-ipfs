@@ -18,12 +18,14 @@ model Post {
   ipfsHash          String?
   title             String?
   slug              String? @unique
+  // type              String 
   htmlContent       String?
   rtfContent        String?
   markdownContent   String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @default(now())
   attachments       String[]
+  @@unique([accountId, slug], name: "unique_account_slug")
 }
 
 model Account {
@@ -38,6 +40,7 @@ model NoteIngestion{
   id                Int     @id @default(autoincrement())
   senderEmail       String
   title             String
+  // type              String 
   appleId           String
   status            String   @default("pending")
   createdAt         DateTime @default(now())

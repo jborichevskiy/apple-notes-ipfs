@@ -42,6 +42,46 @@ function sendEmail(to, subject, bodyText, bodyHTML) {
   );
 }
 
+async function getValidSlug(desiredSlug, accountId, appleId) {
+  let pendingSlug = desiredSlug;
+
+  let existingSlug = await prisma.post.findUnique({
+    where: {
+      unique_account_slug: { accountId: accountId, slug: desiredSlug },
+    },
+  });
+  console.log({ existingSlug });
+
+  // if the same post already exists, use that slug
+  if (
+    existingSlug &&
+    existingSlug.appleId == appleId &&
+    existingSlug.accountId == accountId
+  ) {
+    return desiredSlug;
+  }
+
+  let currentMax = 1;
+  let collisionExists = existingSlug != null;
+  while (collisionExists) {
+    currentMax++;
+    console.log({ currentMax });
+    console.log({ collisionExists });
+    pendingSlug = `${desiredSlug}-${currentMax}`;
+    console.log("new desired slug", pendingSlug);
+    existingSlug = await prisma.post.findUnique({
+      where: {
+        unique_account_slug: { accountId: accountId, slug: pendingSlug },
+      },
+    });
+    console.log({ existingSlug });
+    collisionExists = existingSlug != null;
+  }
+
+  console.log(pendingSlug, "is available!");
+  return pendingSlug;
+}
+
 export function string_to_slug(str, preservePeriods = false) {
   str = str.replace(/^\s+|\s+$/g, ""); // trim
   str = str.toLowerCase();
@@ -186,9 +226,9 @@ async function main() {
     const preferredUsername = string_to_slug(email.split("@")[0], true);
 
     let account = await getAccount(preferredUsername, email);
-    // TODO: avoid collisions
-    const slug = string_to_slug(pendingNote.title.substring(0, 20));
-    console.log({ account, slug });
+
+    const desiredSlug = string_to_slug(pendingNote.title.substring(0, 20));
+    console.log({ account, desiredSlug });
 
     // upload attachments from dir
 
@@ -217,17 +257,26 @@ async function main() {
       });
     });
 
+    // loops through current slugs and appends an `-n` to end
+    const slug = await getValidSlug(
+      desiredSlug,
+      account.id,
+      pendingNote.appleId
+    );
+
     const post = await prisma.post.upsert({
       create: {
         appleId: pendingNote.appleId,
         accountId: account.id,
         ipfsHash: ipfsResponseJson.hash,
+        // todo: get title from note directly, frmo text to first linebreak
         title: pendingNote.title.substring(0, 20),
         slug: slug,
         // markdownContent: generatedMarkdown,
         htmlContent: cleanedHTML,
         rtfContent: rtfContent,
         attachments: attachmentIPFSHashes,
+        // type: pendingNote.type,
       },
       update: {
         ipfsHash: ipfsResponseJson.hash,
@@ -236,6 +285,7 @@ async function main() {
         rtfContent: rtfContent,
         updatedAt: new Date(),
         attachments: attachmentIPFSHashes,
+        slug: slug,
       },
       where: {
         appleId: pendingNote.appleId,
