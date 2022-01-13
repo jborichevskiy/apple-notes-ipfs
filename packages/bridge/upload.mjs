@@ -13,6 +13,10 @@ const password = process.env.SMTP_PASSWORD;
 
 const prisma = new PrismaClient();
 
+function onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
+}
+
 function sendEmail(to, subject, bodyText, bodyHTML) {
   console.log(`Sending email to ${to}`);
   const transporter = nodemailer.createTransport({
@@ -257,7 +261,8 @@ async function main() {
         htmlContent: cleanedHTML,
         rtfContent: rtfContent,
         updatedAt: new Date(),
-        // attachments: attachmentIPFSHashes,
+        // todo: double check this -- wipe all attachments before re-uploading? versioning?
+        attachments: [],
         slug: slug,
       },
       where: {
@@ -294,12 +299,16 @@ async function main() {
 
         console.log("adding", stdout.trim(), "to attachments");
         // todo: add ipfs hash to db record inside this promise loop
+        let attachments = [...post.attachments, stdout.trim()].filter(
+          onlyUnique
+        );
         await prisma.post.update({
           where: {
             id: post.id,
           },
           data: {
-            attachments: [...post.attachments, stdout.trim()],
+            // todo: verify it looks like a hash, success code?
+            attachments: attachments,
           },
         });
 
