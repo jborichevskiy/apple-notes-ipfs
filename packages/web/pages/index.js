@@ -70,7 +70,7 @@ export default function Me() {
         .secondary {
           color: #dca10d;
           margin-left: 6px;
-          margin-top: 3px;
+          margin-top: 2px;
         }
         p.p1 {
           font-size: 32px;
