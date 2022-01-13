@@ -30,6 +30,7 @@ export default async function handler(req, res) {
       ipfsHash: post.ipfsHash,
       content: post.markdownContent,
       htmlContent: post.htmlContent,
+      attachments: post.attachments,
     });
   } else {
     return res.status(404).json({ message: "post not found" });

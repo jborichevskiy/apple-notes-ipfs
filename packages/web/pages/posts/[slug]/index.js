@@ -13,7 +13,7 @@ export const prisma = new PrismaClient();
 import styles from "@pages/posts/[slug]/[slug].module.css";
 
 export default function Post({ post, error, subdomain }) {
-  const { title, htmlContent } = post || {};
+  const { title, htmlContent, attachments } = post || {};
 
   // const [ipfsHash, setIpfsHash] = useState("");
 
@@ -38,6 +38,19 @@ export default function Post({ post, error, subdomain }) {
     const timeout = setTimeout(() => {
       const target = document.getElementById("content");
       target.innerHTML = htmlContent;
+
+      if (attachments && attachments.length) {
+        const attachmentsDiv = document.getElementById("content");
+        console.log({ attachments });
+        attachmentsDiv.innerHTML = `<h3>Attachments</h3>${attachments.map(
+          (ipfsHash) => {
+            return ` <a href="https://ipfs.io/ipfs/${ipfsHash}">${ipfsHash.substring(
+              0,
+              6
+            )}</a>`;
+          }
+        )}`;
+      }
     }, 1);
     return () => clearTimeout(timeout);
   }, [htmlContent]);
@@ -53,6 +66,7 @@ export default function Post({ post, error, subdomain }) {
       </Head>
       <div className={styles.container}>
         {post && !error ? <div id="content" /> : null}
+        {post && !error ? <div id="attachments" /> : null}
         {error ? <PostsError message={error.message} /> : null}
       </div>
 
@@ -140,6 +154,7 @@ export const getServerSideProps = async (context) => {
       post: {
         title: post.title,
         htmlContent: post.htmlContent,
+        attachments: post.attachments,
       },
       error: null,
     },
