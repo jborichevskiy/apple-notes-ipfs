@@ -25,6 +25,7 @@ model Post {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @default(now())
   attachments       String[]
+  uploads           Upload[]
   @@unique([accountId, slug], name: "unique_account_slug")
 }
 
@@ -34,6 +35,7 @@ model Account {
   email             String  @unique
   name              String?
   posts             Post[]
+  uploads           Upload[]
 }
 
 model NoteIngestion{
@@ -43,6 +45,18 @@ model NoteIngestion{
   // type              String 
   appleId           String
   status            String   @default("pending")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now())
+}
+
+model Upload {
+  id                Int      @id @default(autoincrement())
+  postId            Int
+  post              Post?    @relation(fields: [postId], references: [id])
+  accountId         Int?
+  account           Account? @relation(fields: [accountId], references: [id])
+  ipfs              String
+  capturedAt        DateTime
   createdAt         DateTime @default(now())
   updatedAt         DateTime @default(now())
 }
