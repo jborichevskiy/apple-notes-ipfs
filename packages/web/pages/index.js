@@ -72,31 +72,6 @@ export default function Me() {
           margin-left: 6px;
           margin-top: 2px;
         }
-        p.p1 {
-          font-size: 32px;
-        }
-        p.p2 {
-          font-size: 24px;
-        }
-        p.p3 {
-          font-size: 16px;
-        }
-        p.p4 {
-          font-size: 16px;
-          font-family: monospace;
-        }
-        p.p5 {
-          font-size: 16px;
-        }
-        p.p6 {
-          font-size: 16px;
-        }
-        ul.ul1 {
-          list-style-type: disc;
-        }
-        li.li3 {
-          font-size: 16px;
-        }
       `}</style>
       </html>
     </>
