@@ -51,7 +51,7 @@ model NoteIngestion{
 
 model Upload {
   id                Int      @id @default(autoincrement())
-  postId            Int
+  postId            Int?
   post              Post?    @relation(fields: [postId], references: [id])
   accountId         Int?
   account           Account? @relation(fields: [accountId], references: [id])
