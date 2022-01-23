@@ -43,6 +43,16 @@ async function main() {
           });
           return;
         }
+        // clear all the all uploads on this post
+        await prisma.upload.updateMany({
+          data: {
+            postId: null,
+          },
+          where: {
+            postId: queuedNote.id,
+          },
+        });
+
         console.log(`stdout: ${stdout}`);
         await prisma.noteIngestion.update({
           data: {

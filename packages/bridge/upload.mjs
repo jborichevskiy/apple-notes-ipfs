@@ -297,18 +297,16 @@ async function main() {
 
         if (!stdout) return;
 
-        console.log("adding", stdout.trim(), "to attachments");
-        // todo: add ipfs hash to db record inside this promise loop
-        let attachments = [...post.attachments, stdout.trim()].filter(
-          onlyUnique
-        );
-        await prisma.post.update({
-          where: {
-            id: post.id,
-          },
+        // get system createdAt time from file
+        const createdAt = new Date(fs.statSync(path).birthtimeMs).toISOString();
+
+        // create an attachment object
+        await prisma.upload.create({
           data: {
-            // todo: verify it looks like a hash, success code?
-            attachments: attachments,
+            ipfs: stdout.trim(),
+            accountId: account.id,
+            postId: post.id,
+            capturedAt: createdAt,
           },
         });
 
