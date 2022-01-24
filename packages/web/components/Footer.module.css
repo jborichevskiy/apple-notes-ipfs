@@ -1,7 +1,6 @@
 .container {
-  padding-left: 4rem;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
 }
 
@@ -11,11 +10,11 @@
 }
 
 .container a::before {
-  content: '❮ '
+  content: "❮ ";
 }
 
 .container a::after {
-  content: ' ❯'
+  content: " ❯";
 }
 
 @media screen and (max-width: 900px) {

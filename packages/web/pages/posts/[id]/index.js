@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useEffect } from "react";
 
-import PostsLayout from "@components/posts/PostsLayout";
+import Footer from "@components/Footer";
 import PostsError from "@components/posts/PostsError";
 
 import buildPageTitleString from "@utils/posts/build-page-title-string";
@@ -10,9 +10,9 @@ import { PrismaClient } from "@prisma/client";
 
 export const prisma = new PrismaClient();
 
-import styles from "@pages/posts/[slug]/[slug].module.css";
+import styles from "@pages/posts/[id]/[id].module.css";
 
-export default function Post({ post, error, subdomain }) {
+export default function Post({ post, error }) {
   const { title, htmlContent, attachments } = post || {};
 
   // const [ipfsHash, setIpfsHash] = useState("");
@@ -56,18 +56,21 @@ export default function Post({ post, error, subdomain }) {
   }, [htmlContent]);
 
   return (
-    <PostsLayout>
+    <>
       <Head>
-        <title>{buildPageTitleString(title, subdomain)}</title>
+        <title>{buildPageTitleString(title)}</title>
         <meta property="og:title" content={title} key="title" />
-        <meta property="og:site_name" content={`${subdomain}.notes.site`} />
-        <meta property="og:url" content={`https://${subdomain}.notes.site`} />
+        <meta property="og:site_name" content="notes.site" />
+        <meta property="og:url" content="https://notes.site" />
         <meta property="og:type" content="article" />
       </Head>
       <div className={styles.container}>
-        {post && !error ? <div id="content" /> : null}
-        {post && !error ? <div id="attachments" className="footer" /> : null}
+        <div className={styles.content}>
+          {post && !error ? <div id="content" /> : null}
+        </div>
+        {/* {post && !error ? <div id="attachments" className="footer" /> : null} */}
         {error ? <PostsError message={error.message} /> : null}
+        <div className={styles.footer}>{/* <Footer /> */}</div>
       </div>
 
       {/* TODO: Better co-locate the styles */}
@@ -75,8 +78,8 @@ export default function Post({ post, error, subdomain }) {
         .footer {
           margin-top: 2rem;
         }
-        a {
-          color: #dca10d
+        a, a > span, a > span > b {
+          color: #dca10d !important;
         }
         p.p1 {
           font-size: 32px;
@@ -97,63 +100,50 @@ export default function Post({ post, error, subdomain }) {
         p.p6 {
           font-size: 16px;
         }
-        ul.ul1 {
+        ul.ul1, ul.ul3, ul.ul5 {
           list-style-type: disc;
+          color: white;
         }
-        li.li3 {
+        li.li1, li.li3, li.li5 {
           font-size: 16px;
+          color: white;
+        }
+        span.s1, span.s2, span.s3, span.s4, span.s5 {
+          color: white;
         }
       `}</style>
-    </PostsLayout>
+    </>
   );
 }
 
 export const getServerSideProps = async (context) => {
-  const { req, params } = context;
-  const subdomain = req.headers.host.split(".")[0] || "";
-  const { slug } = params;
+  console.log(context);
+
+  let post;
 
   // NOTE: This should be a function or imported method that makes a call to the backend.
-  const account = await prisma.account.findFirst({
-    where: {
-      username: subdomain,
-    },
-  });
-
-  if (!account) {
-    return {
-      subdomain,
-      post: null,
-      error: {
-        message: "account not found",
+  if (context.query?.id) {
+    post = await prisma.post.findUnique({
+      where: {
+        // visible: true,
+        appleId: context.query?.id,
       },
-      notFound: true,
-    };
+    });
   }
-
-  // NOTE: This should be a function or imported method that makes a call to the backend.
-  const post = await prisma.post.findFirst({
-    where: {
-      // visible: true,
-      slug,
-      accountId: account.id,
-    },
-  });
 
   if (!post) {
     return {
-      subdomain,
-      post: null,
-      error: {
-        message: "post not found",
+      props: {
+        post: null,
+        error: {
+          message: "post not found",
+        },
       },
-      notFound: true,
     };
   }
 
   return {
     props: {
-      subdomain,
       post: {
         title: post.title,
         htmlContent: post.htmlContent,

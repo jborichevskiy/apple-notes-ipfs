@@ -3,18 +3,7 @@ import { PrismaClient } from "@prisma/client";
 export const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-  const subdomain = req.headers.host.split(".")[0] || "";
-
-  const account = await prisma.account.findFirst({
-    where: {
-      username: subdomain ? subdomain : undefined,
-    },
-  });
-
-  if (!account) {
-    return res.status(404).json({ message: "account not found" });
-  }
-
+  // titles vs id vs hash
   const posts = await prisma.post.findMany({
     where: {
       // visible: true,

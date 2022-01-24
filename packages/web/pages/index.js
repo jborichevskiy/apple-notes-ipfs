@@ -1,6 +1,4 @@
-import PostsLayout from "@components/posts/PostsLayout";
-
-export default function Me() {
+export default function Home() {
   return (
     <>
       <html>

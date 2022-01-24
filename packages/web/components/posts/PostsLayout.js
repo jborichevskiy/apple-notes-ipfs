@@ -16,9 +16,9 @@ const PostsLayout = ({ children }) => {
 
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
+      {/* <aside className={styles.sidebar}>
         <Sidebar name={pageName} />
-      </aside>
+      </aside> */}
       <main className={styles.body}>{children}</main>
       <div className={styles.footer}>
         <Footer />

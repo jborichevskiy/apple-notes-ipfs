@@ -9,3 +9,7 @@
     padding: 1rem;
   }
 }
+
+.drawings img {
+  width: 100%;
+}

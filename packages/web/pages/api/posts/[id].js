@@ -3,26 +3,27 @@ import { PrismaClient } from "@prisma/client";
 export const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-  const { slug } = req.query;
-  const subdomain = req.headers.host.split(".")[0] || "";
-  console.log({ slug, subdomain });
-
-  const account = await prisma.account.findUnique({
+  const post = await prisma.post.findUnique({
     where: {
-      username: subdomain,
+      appleId: req.query.id,
     },
+    // orderBy: {
+    //   createdAt: "desc",
+    // },
   });
+  console.log({ post });
 
-  if (!account) {
-    return res.status(404).json({ message: "account not found" });
-  }
-
-  const post = await prisma.post.findFirst({
-    where: {
-      slug,
-      accountId: account.id,
-    },
-  });
+  // generate list of ipfs hashes from upload[]
+  const uploads = await prisma.upload
+    .query({
+      where: {
+        postId: post.id,
+      },
+      orderBy: {
+        capturedAt: "asc",
+      },
+    })
+    .map((upload) => upload.ipfsHash);
 
   if (post) {
     return res.status(200).json({
@@ -31,6 +32,7 @@ export default async function handler(req, res) {
       content: post.markdownContent,
       htmlContent: post.htmlContent,
       attachments: post.attachments,
+      upload: uploads,
     });
   } else {
     return res.status(404).json({ message: "post not found" });
