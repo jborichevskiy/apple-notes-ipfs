@@ -17,7 +17,7 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
-function sendEmail(to, subject, bodyText, bodyHTML) {
+function sendEmail(to, subject, bodyText, bodyHTML, replyMessageId) {
   console.log(`Sending email to ${to}`);
   const transporter = nodemailer.createTransport({
     host: hostname,
@@ -31,6 +31,15 @@ function sendEmail(to, subject, bodyText, bodyHTML) {
     logger: true,
   });
 
+  let headers = {};
+  if (replyMessageId != null) {
+    headers = {
+      "In-Reply-To": replyMessageId,
+      References: replyMessageId,
+    };
+  }
+
+  console.log({ headers });
   transporter.sendMail(
     {
       from: '"notes.site" <share@notes.site>',
@@ -38,7 +47,7 @@ function sendEmail(to, subject, bodyText, bodyHTML) {
       subject: subject,
       text: bodyText,
       html: bodyHTML,
-      headers: {},
+      headers: headers,
     },
     (res) => {
       console.log({ res });
@@ -333,7 +342,8 @@ async function main() {
       `your post has been created! view it here: http://${account.username}.notes.site/posts/${post.slug}
 
         thanks for trying notes.site`,
-      `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${post.slug}">here</a>. In a few minutes, your post will be indexed on ipfs <a href="https://ipfs.io/ipfs/${ipfsResponseJson.hash}">here</a>.<br><br>thanks for trying notes.site!</p>`
+      `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${post.slug}">here</a>. In a few minutes, your post will be indexed on ipfs <a href="https://ipfs.io/ipfs/${ipfsResponseJson.hash}">here</a>.<br><br>thanks for trying notes.site!</p>`,
+      pendingNote.messageId
     );
 
     const response = await fetch("https://notes.site/api/conclude", {
