@@ -1,34 +1,90 @@
 import { PrismaClient } from "@prisma/client";
 
 export const prisma = new PrismaClient();
+import nodemailer from "nodemailer";
+
+const hostname = process.env.SMTP_HOST;
+const username = process.env.SMTP_USERNAME;
+const password = process.env.SMTP_PASSWORD;
+
+function sendEmail(to, subject, bodyText, bodyHTML, replyMessageId) {
+  console.log(`Sending email to ${to}`);
+  const transporter = nodemailer.createTransport({
+    host: hostname,
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: username,
+      pass: password,
+    },
+    logger: true,
+  });
+
+  let headers = {};
+  if (replyMessageId != null) {
+    headers = {
+      "In-Reply-To": replyMessageId,
+      References: replyMessageId,
+    };
+  }
+
+  console.log({ headers });
+  transporter.sendMail(
+    {
+      from: '"notes.site" <share@notes.site>',
+      to: to,
+      subject: subject,
+      text: bodyText,
+      html: bodyHTML,
+      headers: headers,
+    },
+    (res) => {
+      console.log({ res });
+    }
+  );
+}
 
 export default async function handler(req, res) {
   if (req.method == "POST") {
-    console.log("incoming email", req.body);
+    console.log("incoming email", req);
 
-    const r = new RegExp("(https://www.icloud.com/notes/[0-9A-z-#]+)");
+    const r = new RegExp("(icloud.com/notes/[0-9A-z-#]+)");
 
     // TODO: protection
     const results = r.exec(req.body.html);
     console.log({ results });
-    if (results && results.length == 2) {
-      const url = results[1];
+    if (results) {
+      const url = results[0];
 
       const id = url.split("/notes/")[1].split("#")[0].trim();
       const authorName = req.body.from.name;
       // const authorEmail = req.body.from.email;
       const titleString = req.body.subject;
 
-      let title;
-      title = titleString.substr(1, titleString.length - 2);
+      let title = titleString.replace('"', "").trim();
+      let messageId = req.body["message-id"];
+
+      console.log({ messageId });
 
       await prisma.noteIngestion.create({
         data: {
           appleId: id,
           title: title,
           senderEmail: req.body.from.email,
+          messageId: messageId,
         },
       });
+
+      // TODO: think about missing / bad title
+      // send email
+      sendEmail(
+        req.body.from.email,
+        `re: ${titleString}`,
+        "your note is now queued for sharing. We'll reply here once it's ready. \n\nIf anything goes wrong, feel free to reply to this email.\n\nnotes.site",
+        `<p>your note is now queued for sharing. We'll reply here once it's ready. <br><br>If anything goes wrong, feel free to reply to this email.</p>`,
+        messageId
+      );
 
       res.status(200).json({ status: "note scheduled for ingestion" });
     } else {
