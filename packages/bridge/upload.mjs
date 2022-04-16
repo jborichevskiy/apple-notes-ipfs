@@ -55,46 +55,6 @@ function sendEmail(to, subject, bodyText, bodyHTML, replyMessageId) {
   );
 }
 
-async function getValidSlug(desiredSlug, accountId, appleId) {
-  let pendingSlug = desiredSlug;
-
-  let existingSlug = await prisma.post.findUnique({
-    where: {
-      unique_account_slug: { accountId: accountId, slug: desiredSlug },
-    },
-  });
-  console.log({ existingSlug });
-
-  // if the same post already exists, use that slug
-  if (
-    existingSlug &&
-    existingSlug.appleId == appleId &&
-    existingSlug.accountId == accountId
-  ) {
-    return desiredSlug;
-  }
-
-  let currentMax = 1;
-  let collisionExists = existingSlug != null;
-  while (collisionExists) {
-    currentMax++;
-    console.log({ currentMax });
-    console.log({ collisionExists });
-    pendingSlug = `${desiredSlug}-${currentMax}`;
-    console.log("new desired slug", pendingSlug);
-    existingSlug = await prisma.post.findUnique({
-      where: {
-        unique_account_slug: { accountId: accountId, slug: pendingSlug },
-      },
-    });
-    console.log({ existingSlug });
-    collisionExists = existingSlug != null;
-  }
-
-  console.log(pendingSlug, "is available!");
-  return pendingSlug;
-}
-
 export function string_to_slug(str, preservePeriods = false) {
   str = str.replace(/^\s+|\s+$/g, ""); // trim
   str = str.toLowerCase();
@@ -172,192 +132,100 @@ async function main() {
 
   const absPathRtf = `${dataDir}${rtfFile}`;
 
-  // convert RTF to HTML
-  const command = `/usr/bin/textutil -convert html ${absPathRtf} -output ${dataDir}${pendingNote.appleId}.html`;
-  console.log({ command });
-  exec(command, async (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-      await prisma.noteIngestion.update({
-        data: {
-          status: "error - textutil",
-        },
-        where: {
-          id: pendingNote.id,
-        },
-      });
-      return;
-    }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
+  const rtfBuffer = fs.readFileSync(`${dataDir}${rtfFile}`);
+  const rtfContent = rtfBuffer.toString();
 
-    const htmlPathAbs = `${dataDir}${pendingNote.appleId}.html`;
-    // getFile(htmlPathAbs);
-    const htmlBuffer = fs.readFileSync(htmlPathAbs);
-    const htmlContent = htmlBuffer.toString();
+  const htmlPathAbs = `/Users/m1/Desktop/Code/apple-notes-ipfs/packages/icloud-bridge/data/notessite/posts/${pendingNote.appleId}.html`;
+  const htmlBuffer = fs.readFileSync(htmlPathAbs);
+  // const htmlContent = htmlBuffer.toString();
 
-    // clean HTML -- get rid of head tag
-    let cleanedHTML = htmlContent
-      .replaceAll("\n", "")
-      .replaceAll(/<meta[^>]*>.+<\/meta>/g, "");
-    cleanedHTML = cleanedHTML.replace(/<script[^>]*>.+<\/script>/g, "");
-    // TODO: pre formatted text
+  const emailBuffer = fs.readFileSync(`${dataDir}${emailFile}`);
+  const emailFileContent = emailBuffer.toString();
 
-    const rtfBuffer = fs.readFileSync(`${dataDir}${rtfFile}`);
-    const rtfContent = rtfBuffer.toString();
+  const email = emailFileContent.trim();
+  const preferredUsername = string_to_slug(email.split("@")[0], true);
 
-    const emailBuffer = fs.readFileSync(`${dataDir}${emailFile}`);
-    const emailFileContent = emailBuffer.toString();
+  var fd = fs.openSync(`${htmlPathAbs}`, "w+");
+  var buffer = Buffer.from(`<!--
+Title: ${pendingNote.title
+    .replace('"', "")
+    .replace("“", "")
+    .replace("”", "")
+    .trim()}
+-->
+`);
 
-    const postDataToIPFS = {
-      // markdown: generatedMarkdown,
-      html: cleanedHTML,
-      rtf: rtfContent,
-      created: new Date(),
-      // author: pendingNote.author,
-      id: pendingNote.appleId,
-    };
+  console.log("buffer.tostring", buffer.toString());
+  console.log("htmlBuffer.tostring", htmlBuffer.toString());
 
-    console.log("uploading", postDataToIPFS);
+  fs.writeSync(fd, buffer, 0, buffer.length, 0); //write new data
+  fs.writeSync(fd, htmlBuffer, 0, htmlBuffer.length, htmlBuffer.length); //append old data
+  // or fs.appendFile(fd, data);
+  fs.close(fd);
 
-    // upload to IFPS
-    const ipfsResponse = await fetch("http://137.184.218.83:3000/uploadJSON", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(postDataToIPFS),
-    });
+  let account = await getAccount(preferredUsername, email);
 
-    const ipfsResponseJson = await ipfsResponse.json();
-    console.log(ipfsResponseJson);
+  const desiredSlug = string_to_slug(pendingNote.title.substring(0, 20));
 
-    const email = emailFileContent.trim();
-    const preferredUsername = string_to_slug(email.split("@")[0], true);
+  const post = await prisma.post.upsert({
+    create: {
+      appleId: pendingNote.appleId,
+      accountId: account.id,
+      // todo: get title from note directly, frmo text to first linebreak
+      title: pendingNote.title.replace('"', "").trim(),
+      slug: pendingNote.appleId,
+      // markdownContent: generatedMarkdown,
+      rtfContent: rtfContent,
+      // attachments: attachmentIPFSHashes,
+      // type: pendingNote.type,
+    },
+    update: {
+      // markdownContent: generatedMarkdown,
+      rtfContent: rtfContent,
+      updatedAt: new Date(),
+      // todo: double check this -- wipe all attachments before re-uploading? versioning?
+      attachments: [],
+      slug: pendingNote.appleId,
+    },
+    where: {
+      slug: pendingNote.appleId,
+    },
+  });
 
-    let account = await getAccount(preferredUsername, email);
+  // upload attachments from dir
 
-    const desiredSlug = string_to_slug(pendingNote.title.substring(0, 20));
-    console.log({ account, desiredSlug });
+  await prisma.noteIngestion.update({
+    data: {
+      status: "uploaded",
+    },
+    where: {
+      id: pendingNote.id,
+    },
+  });
 
-    // loops through current slugs and appends an `-n` to end
-    const slug = await getValidSlug(
-      desiredSlug,
-      account.id,
-      pendingNote.appleId
-    );
+  const subject = `${post.title} published`;
 
-    const post = await prisma.post.upsert({
-      create: {
-        appleId: pendingNote.appleId,
-        accountId: account.id,
-        ipfsHash: ipfsResponseJson.hash,
-        // todo: get title from note directly, frmo text to first linebreak
-        title: pendingNote.title.substring(0, 20),
-        slug: slug,
-        // markdownContent: generatedMarkdown,
-        htmlContent: cleanedHTML,
-        rtfContent: rtfContent,
-        // attachments: attachmentIPFSHashes,
-        // type: pendingNote.type,
-      },
-      update: {
-        ipfsHash: ipfsResponseJson.hash,
-        // markdownContent: generatedMarkdown,
-        htmlContent: cleanedHTML,
-        rtfContent: rtfContent,
-        updatedAt: new Date(),
-        // todo: double check this -- wipe all attachments before re-uploading? versioning?
-        attachments: [],
-        slug: slug,
-      },
-      where: {
-        appleId: pendingNote.appleId,
-      },
-    });
-
-    // upload attachments from dir
-
-    const files = await fs.promises.readdir(dataDir);
-    const noteAttachments = files.filter(
-      (f) => f.includes(`${pendingNote.appleId}`) && f.includes(".png")
-    );
-    console.log({ noteAttachments });
-
-    noteAttachments.map((fileName) => {
-      const path = `${dataDir}${fileName}`;
-      console.log({ path });
-      const cmd = `curl --location --request POST 'http://137.184.218.83:3000/upload' --form '=@"${path}"' -s | python -c "import sys, json; print(json.load(sys.stdin)['hash'])"`;
-      console.log({ cmd });
-
-      exec(cmd, async (error, stdout, stderr) => {
-        if (error) {
-          console.log(`error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
-        }
-        console.log(`stdout: ${stdout}`);
-
-        if (!stdout) return;
-
-        // get system createdAt time from file
-        const createdAt = new Date(fs.statSync(path).birthtimeMs).toISOString();
-
-        // create an attachment object
-        await prisma.upload.create({
-          data: {
-            ipfs: stdout.trim(),
-            accountId: account.id,
-            postId: post.id,
-            capturedAt: createdAt,
-          },
-        });
-
-        return stdout.trim();
-      });
-    });
-    // console.log({ attachmentIPFSHashes });
-
-    await prisma.noteIngestion.update({
-      data: {
-        status: "uploaded",
-      },
-      where: {
-        id: pendingNote.id,
-      },
-    });
-
-    const subject = `${post.title} published`;
-
-    // send email
-    sendEmail(
-      email,
-      subject,
-      `your post has been created! view it here: http://${account.username}.notes.site/posts/${post.slug}
+  // send email
+  sendEmail(
+    email,
+    subject,
+    `your post has been created! view it here: https://beta.notes.site/${post.slug}
 
         thanks for trying notes.site`,
-      `<p>your post has been created! view it <a href="http://${account.username}.notes.site/posts/${post.slug}">here</a>. In a few minutes, your post will be indexed on ipfs <a href="https://ipfs.io/ipfs/${ipfsResponseJson.hash}">here</a>.<br><br>thanks for trying notes.site!</p>`,
-      pendingNote.messageId
-    );
-
-    const response = await fetch("https://notes.site/api/conclude", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        appleId: post.appleId,
-      }),
-    });
-    const responseJson = await response.json();
-    console.log({ responseJson });
+    `<p>your post has been created! view it <a href="https://beta.notes.site/${post.slug}">here</a>.<br><br>thanks for trying notes.site!</p>`,
+    pendingNote.messageId
+  );
+  const response = await fetch("https://notes.site/api/conclude", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      appleId: post.appleId,
+    }),
   });
+  const responseJson = await response.json();
+  console.log({ responseJson });
 }
 
 await main();
