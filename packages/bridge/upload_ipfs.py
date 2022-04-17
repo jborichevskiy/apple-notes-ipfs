@@ -4,7 +4,7 @@ import shutil
 import os
 from pinatapy import PinataPy
 
-pinata = PinataPy('apikey', 'apisecret')
+pinata = PinataPy('9ad4e4e0e92a290e7a79', '1e0af608dfb0a1ac468d92fc3dac2165ac34fd281249262d14f65e52a7daf36c')
 
 
 GIT_REPO_DIR = '/Users/m1/Desktop/Code/apple-notes-ipfs/packages/icloud-bridge/data/notessite'
