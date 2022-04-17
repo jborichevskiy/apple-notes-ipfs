@@ -209,10 +209,17 @@ Title: ${pendingNote.title
   sendEmail(
     email,
     subject,
-    `your post has been created! view it here: https://beta.notes.site/${post.slug}
+    `your post has been created! 
+    
+    text version: https://beta.notes.site/${post.slug}
+    scanned version: https://beta.notes.site/${post.appleId}_scan
 
-        thanks for trying notes.site`,
-    `<p>your post has been created! view it <a href="https://beta.notes.site/${post.slug}">here</a>.<br><br>thanks for trying notes.site!</p>`,
+    thanks for trying notes.site`,
+    `<p>your post has been created!
+     <br>text version: <a href="https://beta.notes.site/${post.slug}">here</a>
+     <br>scanned version: <a href="https://beta.notes.site/${post.slug}_scan">here</a>
+     <br>
+     <br>thanks for trying notes.site!</p>`,
     pendingNote.messageId
   );
   const response = await fetch("https://notes.site/api/conclude", {
