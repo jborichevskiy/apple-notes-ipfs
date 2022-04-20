@@ -17,7 +17,7 @@ async function main() {
       `passing ${queuedNote.appleId} to KeyboardMaestro for initial ingestion`
     );
     exec(
-      `osascript -e \'tell application "Keyboard Maestro Engine" to do script "2D7CFB8D-19E9-457F-B0E5-8E46495BB12F" with parameter "${queuedNote.appleId}"\'`,
+      `osascript -e \'tell application "Keyboard Maestro Engine" to do script "22F0CBBC-38BA-496D-A5D7-68EB025E8B7E" with parameter "${queuedNote.appleId}"\'`,
       async (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
