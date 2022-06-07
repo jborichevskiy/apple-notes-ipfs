@@ -58,7 +58,10 @@ async function main() {
     },
   });
 
-  if (!pendingNote) return;
+  if (!pendingNote) {
+    console.log('no pending note')
+    return;
+  };
 
   const email = pendingNote.senderEmail;
   const subject = `notes.site published your note`;
