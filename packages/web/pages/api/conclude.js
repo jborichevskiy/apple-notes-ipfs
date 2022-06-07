@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     const pendingNote = await prisma.noteIngestion.findFirst({
       where: {  
         appleId: appleId,
-        status: "pending",
+        status: "processed",
       }, 
       orderBy: {
         createdAt: "desc",
