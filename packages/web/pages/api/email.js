@@ -1,50 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
 export const prisma = new PrismaClient();
-import nodemailer from "nodemailer";
-
-const hostname = process.env.SMTP_HOST;
-const username = process.env.SMTP_USERNAME;
-const password = process.env.SMTP_PASSWORD;
-
-function sendEmail(to, subject, bodyText, bodyHTML, replyMessageId) {
-  console.log(`Sending email to ${to}`);
-  console.log(hostname, username)
-  const transporter = nodemailer.createTransport({
-    host: hostname,
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    auth: {
-      user: username,
-      pass: password,
-    },
-    logger: true,
-  });
-
-  let headers = {};
-  if (replyMessageId != null) {
-    headers = {
-      "In-Reply-To": replyMessageId,
-      References: replyMessageId,
-    };
-  }
-
-  console.log({ headers });
-  transporter.sendMail(
-    {
-      from: '"notes.site" <share@notes.site>',
-      to: to,
-      subject: subject,
-      text: bodyText,
-      html: bodyHTML,
-      headers: headers,
-    },
-    (res) => {
-      console.log({ res });
-    }
-  );
-}
 
 export default async function handler(req, res) {
   if (req.method == "POST") {
@@ -76,16 +32,6 @@ export default async function handler(req, res) {
           messageId: messageId,
         },
       });
-
-      console.log('sending ack email')
-      sendEmail(
-        req.body.from.email,
-        `notes.site received your share`,
-        "your note is now queued for sharing. We'll send you an email once it's ready.",
-        `<p>your note is now queued for sharing. We'll send you an email once it's ready.</p>`,
-        messageId
-      );
-      console.log('sent')
 
       res.status(200).json({ status: "note scheduled for ingestion" });
     } else {

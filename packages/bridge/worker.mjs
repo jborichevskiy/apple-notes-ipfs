@@ -1,8 +1,52 @@
 import pkg from "@prisma/client";
 const { PrismaClient } = pkg;
 import { exec } from "child_process";
+import nodemailer from "nodemailer";
 
 const prisma = new PrismaClient();
+
+const hostname = process.env.SMTP_HOST;
+const username = process.env.SMTP_USERNAME;
+const password = process.env.SMTP_PASSWORD;
+
+function sendEmail(to, subject, bodyText, bodyHTML, replyMessageId) {
+  console.log(`Sending email to ${to}`);
+  console.log(hostname, username)
+  const transporter = nodemailer.createTransport({
+    host: hostname,
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: username,
+      pass: password,
+    },
+    logger: true,
+  });
+
+  let headers = {};
+  if (replyMessageId != null) {
+    headers = {
+      "In-Reply-To": replyMessageId,
+      References: replyMessageId,
+    };
+  }
+
+  console.log({ headers });
+  transporter.sendMail(
+    {
+      from: '"notes.site" <share@notes.site>',
+      to: to,
+      subject: subject,
+      text: bodyText,
+      html: bodyHTML,
+      headers: headers,
+    },
+    (res) => {
+      console.log({ res });
+    }
+  );
+}
 
 async function main() {
   let queuedNote = await prisma.noteIngestion.findFirst({
@@ -13,6 +57,16 @@ async function main() {
   console.log({ queuedNote });
 
   if (queuedNote) {
+    // sending email
+
+    sendEmail(
+      queuedNote.senderEmail,
+      `notes.site received your share`,
+      "your note is now queued for sharing. We'll send you an email once it's ready.",
+      `<p>your note is now queued for sharing. We'll send you an email once it's ready.</p>`,
+      queuedNote.messageId
+    );
+
     console.log(
       `passing ${queuedNote.appleId} to KeyboardMaestro for initial ingestion`
     );
