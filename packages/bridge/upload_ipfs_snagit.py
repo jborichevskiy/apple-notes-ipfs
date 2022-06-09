@@ -34,6 +34,10 @@ type: screenshot
             print('not enough/too many files')
             break
 
+        if filenames[0] == 'capture.png':
+            print('awaiting rename')
+            break
+
         filename = filenames[0]
         note_id = filename.split('.')[0]
 
