@@ -9,6 +9,7 @@ const password = process.env.SMTP_PASSWORD;
 
 function sendEmail(to, subject, bodyText, bodyHTML, replyMessageId) {
   console.log(`Sending email to ${to}`);
+  console.log(hostname, username)
   const transporter = nodemailer.createTransport({
     host: hostname,
     port: 587,
