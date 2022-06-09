@@ -82,7 +82,8 @@ export default async function handler(req, res) {
         req.body.from.email,
         `notes.site received your share`,
         "your note is now queued for sharing. We'll send you an email once it's ready.",
-        `<p>your note is now queued for sharing. We'll send you an email once it's ready.</p>`
+        `<p>your note is now queued for sharing. We'll send you an email once it's ready.</p>`,
+        messageId
       );
       console.log('sent')
 
