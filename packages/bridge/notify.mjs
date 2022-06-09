@@ -64,19 +64,19 @@ async function main() {
   };
 
   const email = pendingNote.senderEmail;
-  const subject = `notes.site published your note`;
+  const subject = `your note has been published`;
 
   // send email
   sendEmail(
     email,
     subject,
-    `your post has been created! 
+    `your post has been created.
     
-    https://beta.notes.site/${pendingNote.appleId}_scan
+    https://notes.site/${pendingNote.appleId}_scan
 
     thanks for trying notes.site`,
-    `<p>your post has been created!
-     <br><a href="https://beta.notes.site/${pendingNote.appleId}_scan">view it here</a>
+    `<p>your post has been created.
+     <br><a href="https://notes.site/${pendingNote.appleId}_scan">notes.site/${pendingNote.appleId}_scan</a>
      <br>
      <br>thanks for trying notes.site!</p>`,
     pendingNote.messageId
