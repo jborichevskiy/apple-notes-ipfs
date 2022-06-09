@@ -80,9 +80,8 @@ export default async function handler(req, res) {
       sendEmail(
         req.body.from.email,
         `notes.site received your share`,
-        "your note is now queued for sharing. We'll reply here once it's ready.",
-        `<p>your note is now queued for sharing. We'll reply here once it's ready.</p>`,
-        messageId
+        "your note is now queued for sharing. We'll send you an email once it's ready.",
+        `<p>your note is now queued for sharing. We'll send you an email once it's ready.</p>`
       );
 
       res.status(200).json({ status: "note scheduled for ingestion" });
