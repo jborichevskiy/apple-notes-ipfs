@@ -83,6 +83,7 @@ export default async function handler(req, res) {
         "your note is now queued for sharing. We'll send you an email once it's ready.",
         `<p>your note is now queued for sharing. We'll send you an email once it's ready.</p>`
       );
+      console.log('sent')
 
       res.status(200).json({ status: "note scheduled for ingestion" });
     } else {
