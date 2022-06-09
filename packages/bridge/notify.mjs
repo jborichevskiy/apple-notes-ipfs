@@ -70,13 +70,10 @@ async function main() {
   sendEmail(
     email,
     subject,
-    `your post has been created.
-    
-    https://notes.site/${pendingNote.appleId}_scan
+    `your post has been created. <a href="https://notes.site/${pendingNote.appleId}_scan">view it here</a>
 
     thanks for trying notes.site`,
-    `<p>your post has been created.
-     <br><a href="https://notes.site/${pendingNote.appleId}_scan">notes.site/${pendingNote.appleId}_scan</a>
+    `<p>your post has been created. <a href="https://notes.site/${pendingNote.appleId}_scan">view it here</a>
      <br>
      <br>thanks for trying notes.site!</p>`,
     pendingNote.messageId
