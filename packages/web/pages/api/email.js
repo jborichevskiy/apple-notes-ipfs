@@ -76,13 +76,12 @@ export default async function handler(req, res) {
         },
       });
 
-      // TODO: think about missing / bad title
-      // send email
+      console.log('sending ack email')
       sendEmail(
         req.body.from.email,
-        `re: ${titleString}`,
-        "your note is now queued for sharing. We'll reply here once it's ready. \n\nIf anything goes wrong, feel free to reply to this email.\n\nnotes.site",
-        `<p>your note is now queued for sharing. We'll reply here once it's ready. <br><br>If anything goes wrong, feel free to reply to this email.</p>`,
+        `notes.site received your share`,
+        "your note is now queued for sharing. We'll reply here once it's ready.",
+        `<p>your note is now queued for sharing. We'll reply here once it's ready.</p>`,
         messageId
       );
 
